@@ -1,0 +1,662 @@
+/* 
+******************************************************************************
+* @file    style.css
+* @author  MCD Application Team
+*
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2022-2023 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
+div{
+	text-align: center;
+}
+#header{
+	background-color: #dee2e6;
+	padding-bottom: 0em;
+}
+
+img {
+	margin: 5px;
+	width: 100%;
+	vertical-align: middle;
+}
+
+.smallImage {
+	height: 200px;
+	width: 200px;
+}
+
+
+.logoST{
+	margin: 5px;
+	width: 16em;
+}
+
+.textInput {
+	margin: 20px;
+	text-align: center;
+	font-size: large;
+	width: 10em;
+	height: 3em;
+}
+
+
+.justifyText {
+	text-align: justify;
+	text-justify: inter-word;
+}
+
+
+.fileInput {
+	background: rgb(73, 102, 129);
+}
+
+ul {
+	list-style-type: disc;;
+}
+
+.ulProfile {
+    background-color: #03234b;
+    color: #fff;
+    font-family: sans-serif;
+    font-weight: 700;
+    list-style-type: none;
+    margin: 0;
+	margin-bottom: 0.5em;
+    overflow: hidden;
+    padding: 0;
+    transition-duration: 1s;
+}
+
+.liProfile {
+    float: left;
+}
+
+.liProfile a {
+    color: #fff;
+    display: block;
+    padding: 14px 16px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.liProfile a:hover {
+	transform: scale(1.05);
+	color: #3CB4E6;/* ST light blue */
+}
+
+li {
+    /*display: list-item;*/
+    text-align: -webkit-match-parent;
+}
+
+/*
+li a {
+display: block;
+color: white;
+text-align: center;
+padding: 14px 16px;
+text-decoration: none;
+}
+
+li a:hover {
+transform: scale(1.05);
+color: #3CB4E6;/* ST light blue 
+}*/
+
+#logPanel {
+	width: min-content;
+	position: absolute;
+    left: 0;
+    overflow: auto;
+	background-color: white;
+	height: -webkit-fill-available;
+	
+}
+
+.logElememt {
+	font-weight: bold;
+	margin-top: 5px;
+	background-color: white;
+	text-align: left;
+	float: left;
+	padding-left: 10px;
+	border-bottom: #3CB4E6 dotted 3px;
+	width: -webkit-fill-available;
+}
+
+.card-text {
+	text-align: left;
+}
+
+.iconInfo {
+	height: auto;
+	width: 28px; 
+	float: right; 
+	margin: 5px;
+}
+
+.defaultButton{
+	height: 38px;
+	border-radius: 2px;
+	background-color: #03234B;
+	border: #03234B solid 1px;
+	color: white;
+	font-family: Arial, sans-serif;
+}
+
+.defaultButton.form-control {
+	height: 38px;
+	border-radius: 0px;
+	background-color: #03234B;
+	border: #03234B solid 1px;
+	color: white;
+	font-family: Arial, sans-serif;
+}
+
+.defaultButton:hover {
+	border: #E6007E solid 1px;
+	background-color: #E6007E;
+}
+
+.defaultButton:disabled {
+	color: white;
+	background-color: #425a78;
+	border: #425a78 solid 1px;
+}
+  
+.defaultButton:disabled, .defaultButton.disabled, fieldset:disabled .defaultButton {
+	pointer-events: none;
+	opacity: 0.65;
+}
+
+.custom-bg-danger {
+	background-color: #49B170;
+}
+
+.dangerButton {
+	height: 38px;
+	border-radius: 2px;
+	background-color: #49B170;
+	border: #49B170 solid 1px;
+	color: white;
+	font-family: Arial, sans-serif;
+}
+
+.dangerButton:hover {
+	background-color: #04572F;
+	border: #04572F solid 1px;
+}
+
+.secondaryButton {
+	height: 38px;
+	border-radius: 2px;
+	background-color: #74747c;
+	border: #74747c solid 1px;
+	color: white;
+	font-family: Arial, sans-serif;
+}
+
+.secondaryButton:hover {
+	background-color: #464650;
+	border: #464650 solid 1px;
+}
+
+.secondaryButton:disabled {
+	color: white;
+	background-color: #a2a2a7;
+	border: #a2a2a7 solid 1px;
+}
+
+#formFile {
+	content: "Pick file";
+}
+
+
+
+
+
+
+/* CHECKBOX*/
+/* Customize the label (the container) */
+.containerCheckBox {
+	display: block;
+	position: relative;			
+	padding-left: 35px;
+	margin-bottom: 12px;
+	cursor: pointer;
+	font-size: 22px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+  }
+  
+  /* Hide the browser's default checkbox */
+  .containerCheckBox input {
+	position: absolute;
+	opacity: 0;
+	cursor: pointer;
+	height: 0;
+	width: 0;
+  }
+  
+  /* Create a custom checkbox */
+  .checkmark {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 25px;
+	width: 25px;
+	background-color: #eee;
+  }
+  
+  /* On mouse-over, add a grey background color */
+  .containerCheckBox:hover input ~ .checkmark {
+	background-color: #ccc;
+  }
+  
+  /* When the checkbox is checked, add a blue background */
+  .containerCheckBox input:checked ~ .checkmark {
+	background-color: #03234B;
+  }
+  
+  /* Create the checkmark/indicator (hidden when not checked) */
+  .checkmark:after {
+	content: "";
+	position: absolute;
+	display: none;
+  }
+  
+  /* Show the checkmark when checked */
+  .containerCheckBox input:checked ~ .checkmark:after {
+	display: block;
+  }
+  
+  /* Style the checkmark/indicator */
+  .containerCheckBox .checkmark:after {
+	left: 10px;
+	top: 6px;
+	width: 5px;
+	height: 10px;
+	border: solid white;
+	border-width: 0 2px 2px 0;
+	-webkit-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	transform: rotate(45deg);
+  }
+
+
+
+
+
+
+
+  /* P2P router */
+.bigBoxDevices {
+	margin-top: 5px;
+}
+
+.smallBoxDevice {
+color: #03234B;
+border-radius: 10px;
+background: #dee2e6;
+padding: 5px; 
+padding-left: 0px; /*25px;*/
+margin-bottom: 5px;
+width: 100%;
+height: auto;  
+font-family: Arial, sans-serif;
+display: flex;
+justify-content: space-between;
+align-content: center;
+flex-wrap: wrap;
+}
+
+.headerLine {
+	margin-top: 5px;
+	font-weight: 800;
+}
+
+.pInfo {
+	margin-top: 10px;
+	margin-bottom: 6px;
+}
+.pIndex {
+	margin-top: 10px;
+	margin-bottom: 6px;
+	width: 10%;
+}
+
+.pStatus {
+	margin-top: 10px;
+	margin-bottom: 6px;
+	width: 15%;
+}
+.pName {
+	margin-top: 10px;
+	margin-bottom: 6px;
+	width: 20%;
+}
+.pBd {
+	margin-top: 10px;
+	margin-bottom: 6px;
+	width: 20%;
+}
+.pLED {
+	margin-top: 10px;
+	margin-bottom: 6px;
+	width: 16%;
+}
+.pAlert {
+	margin-top: 10px;
+	margin-bottom: 6px;
+	width: 16%;
+}
+
+/*#############################*/
+/* Style button LIGHT */
+/*#############################*/
+.btnLightOFF {
+	background-color: #03234B;
+	margin-left: 4%;
+	margin-right: 4%;
+	width: 8%;
+	height: auto;
+	border: none;
+	color: white;
+	font-family: Arial, sans-serif;
+	cursor: pointer; /* Mouse pointer on hover */
+}
+
+/* Darker background on mouse-over */
+.btnLightOFF:hover {
+	background-color: #032e63;
+}
+
+/* Style buttons */
+.btnLightON {
+	background-color: #ffe600;
+	margin-left: 4%;
+	margin-right: 4%;
+	width: 8%;
+	border: none;
+	color: black;
+	font-family: Arial, sans-serif;
+	cursor: pointer; /* Mouse pointer on hover */
+}
+
+/* Darker background on mouse-over */
+.btnLightON:hover {
+	background-color: #fffc61d0;
+}
+
+/*#############################*/
+/* Style button Notif */
+/*#############################*/
+.btnNotifOFF {
+	background-color: #5a5a5a;
+	margin-left: 4%;
+	margin-right: 4%;
+	width: 8%;
+	border: none;
+	color: white;
+	font-family: Arial, sans-serif;
+}
+
+/* Style buttons */
+.btnNotifON {
+	background-color: #00c3ff;
+	margin-left: 4%;
+	margin-right: 4%;
+	width: 8%;
+	border: none;
+	color: white;
+	font-family: Arial, sans-serif;
+}
+
+
+
+
+
+
+.textTitle {    
+	margin: 2px;
+    text-align: center;
+    font-size: large;
+    font-weight: 900;
+    color: #03234B;
+    height: 1em;
+}
+
+
+p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.card {
+	border-style: solid;
+	border-width: 10px;
+	border-color: #000000;
+	padding: 10px;
+	margin: 10px;
+}
+
+
+
+
+
+
+
+
+/* The switch - the box around the slider */
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 60px;
+	height: 34px;
+  }
+  
+  /* Hide default HTML checkbox */
+  .switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+  }
+  
+  /* The slider */
+  .slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	-webkit-transition: .4s;
+	transition: .4s;
+  }
+  
+  .slider:before {
+	position: absolute;
+	content: "";
+	height: 26px;
+	width: 26px;
+	left: 4px;
+	bottom: 4px;
+	background-color: white;
+	-webkit-transition: .4s;
+	transition: .4s;
+  }
+  
+  input:checked + .slider {
+	background-color: #2196F3;
+  }
+  
+  input:focus + .slider {
+	box-shadow: 0 0 1px #2196F3;
+  }
+  
+  input:checked + .slider:before {
+	-webkit-transform: translateX(26px);
+	-ms-transform: translateX(26px);
+	transform: translateX(26px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+	border-radius: 34px;
+  }
+  
+  .slider.round:before {
+	border-radius: 50%;
+  }
+
+
+
+
+/* <div class="row justify-content-center"><div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" style="text-align: left;">*/
+
+
+/*#################  TABLE ################*/
+
+table,
+th,
+td {
+  border: 1px solid;
+}
+
+table {
+  width: 100%;
+  margin: 0 auto;
+  display: block;
+  overflow-x: auto;
+  border-spacing: 0;
+}
+
+tbody {
+  white-space: wrap;
+}
+
+th,
+td {
+  padding: 5px 10px;
+  border-top-width: 0;
+  border-left-width: 10px;
+  min-width: 20%;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  vertical-align: bottom;
+  min-width: 10%;
+}
+
+th:last-child,
+td:last-child {
+  border-right-width: 0;
+}
+
+tr:last-child td {
+  border-bottom-width: 0;
+}
+
+
+
+
+/*#################  HEALTH THERMOMETER ################*/
+
+.rcorners1 {
+	border-radius: 15px 50px 30px 5px;
+	background: #73AD21;
+	padding: 20px; 
+	width: 200px;
+	height: 150px; 
+  }
+  
+  .rcorners2 {
+	border-radius: 15px 50px 30px;
+	background: #73AD21;
+	padding: 20px; 
+	width: 200px;
+	height: 150px; 
+	direction: column;
+  }
+  
+ 
+  
+  .rcorners4 {
+	border-radius: 15px;
+	background: #73AD21;
+	padding: 20px; 
+	width: 200px;
+	height: 150px; 
+  } 
+
+
+  .rcorners3 {
+	border-radius: 10px 30px;
+	background: #03234B;
+	padding: 20px; 
+	margin: 10px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	height: auto;
+	width: 500px;
+  } 
+
+  .tempContainer {
+	flex-direction: row;
+	display: flex;
+  	justify-content: space-evenly;
+	color: white;
+	font-weight: 400;
+  }
+
+  .tempInfo {
+	color: white;
+	margin-top: 10px;
+	margin-bottom: 6px;
+	width: 33%;
+  }
+
+  .tempTitle {
+	font-weight: 800;
+	text-decoration: underline;
+	display: flex;
+  }
+
+  .tempSubTitle{
+	font-weight: 700;
+  }
+
+  .tempPannel {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+  }
+
+  .gap{
+	width: 20%;
+  }
+
+  .underlineTitle{
+	width: 80%;
+  }
+
+
+
+
+ 
