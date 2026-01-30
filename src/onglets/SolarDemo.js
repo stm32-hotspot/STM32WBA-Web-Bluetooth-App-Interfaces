@@ -27,8 +27,6 @@ const SolarDemo = (props) => {
     let notifyCharacteristicTemp;
     let notifyCharacteristicLux;; 
 
-    //let rebootCharacteristic;
-    let displayRebootPanel = "none";
     let TemperatureDataSet = [];
     let TemperatureTime = [];
     let LuxDataSet = [];
@@ -130,13 +128,13 @@ const SolarDemo = (props) => {
         });
 
         if (TemperatureDataSet.length >= GRAPH_MAX_LABELS) {
-            TemperatureDataSet.pop(); // Remove the last element
-            TemperatureDataSet.unshift(data); // Add data at the beginning of to the Array
-            TemperatureTime.pop(); // Remove the last element
-            TemperatureTime.unshift(time); // Add current time at the beginning of to the Array
+            TemperatureDataSet.shift(); // Remove the first element
+            TemperatureDataSet.push(data); // Add data at the end of to the Array
+            TemperatureTime.shift(); // Remove the first element
+            TemperatureTime.push(time); // Add current time at the end of to the Array
         } else {
-            TemperatureDataSet.unshift(data); // Add data at the beginning of to the Array
-            TemperatureTime.unshift(time); // Add current time at the beginning of to the Array
+            TemperatureDataSet.push(data); // Add data at the end of to the Array
+            TemperatureTime.push(time); // Add current time at the end of to the Array
         }
 
         // Update the chart with new TemperatureDataSet and TemperatureTime values
@@ -156,13 +154,13 @@ const SolarDemo = (props) => {
         });
 
         if (LuxDataSet.length >= GRAPH_MAX_LABELS) {
-            LuxDataSet.pop(); // Remove the last element
-            LuxDataSet.unshift(data); // Add data at the beginning of to the Array
-            LuxTime.pop(); // Remove the last element
-            LuxTime.unshift(time); // Add current time at the beginning of to the Array
+            LuxDataSet.shift(); // Remove the first element
+            LuxDataSet.push(data); // Add data at the end of to the Array
+            LuxTime.shift(); // Remove the first element
+            LuxTime.push(time); // Add current time at the end of to the Array
         } else {
-            LuxDataSet.unshift(data); // Add data at the beginning of to the Array
-            LuxTime.unshift(time); // Add current time at the beginning of to the Array
+            LuxDataSet.push(data); // Add data at the end of to the Array
+            LuxTime.push(time); // Add current time at the end of to the Array
         }
 
         // Update the chart with new TemperatureDataSet and TemperatureTime values
@@ -187,52 +185,7 @@ const SolarDemo = (props) => {
   });
 
     document.getElementById("readmeInfo").style.display = "none";
-
-    // read button handler
-    async function onReadButtonClick() {
-      /*
-        var value = await readCharacteristic.characteristic.readValue();
-        let statusWord = new Uint8Array(value.buffer);
-        console.log(statusWord);
-        document.getElementById('readLabel').innerHTML = "0x" + statusWord.toString();
-        createLogElement(statusWord, 1, "HEART RATE READ");
-        */
-    }
-
-    // write button handler
-    async function onWriteButtonClick() {
-      /*
-        let myInput = document.getElementById('writeInput').value;
-        let myWord;
-        console.log(myInput);
-        myWord = new Uint8Array(2);
-        myWord[0] = myInput.slice(0, 2);
-        myWord[1] = myInput.slice(2, 4);
-        try {
-            console.log("Writing >> " + myWord);
-            await writeCharacteristic.characteristic.writeValue(myWord);
-            createLogElement(myWord, 1, "HEART RATE WRITE");
-        }
-        catch (error) {
-            console.log('Argh! ' + error);
-        }
-            */
-    }
-
-    // reset calorie count button handler
-    async function onResetButtonClick() {
-      /*
-        const resetEnergyExpended = Uint8Array.of(1);
-        try {
-            console.log("Writing >> " + resetEnergyExpended);
-            await writeCharacteristic.characteristic.writeValue(resetEnergyExpended);
-            createLogElement(resetEnergyExpended, 1, "HEART RATE WRITE");
-        }
-        catch (error) {
-            console.log('Argh! ' + error);
-    }
-            */
-  }
+  
 
     async function onNotifyButtonClick() {
         let notifStatus = document.getElementById('notifyButton').innerHTML;
@@ -264,12 +217,7 @@ const SolarDemo = (props) => {
         var buf = new Uint8Array(event.target.value.buffer);
         console.log(buf);
         
-        //document.getElementById('heartRateMeasurement').innerHTML = "Heart Rate measurement : " + buf[1].toString();
-        //document.getElementById('energyExpended').innerHTML = "Energy expended : " + buf[3].toString();
-        //document.getElementById('bodySensorLocation').innerHTML = "Body sensor location : " + buf[6].toString();
-        //console.log(JSON.stringify(buf));
         createLogElement(buf, 2, "Lux NOTIFICATION");
-        //updateTempDataset(0, buf[0])
         updateTempDataset(0, buf[0])
     }
     function notifHandlerLux(event) {
@@ -277,11 +225,6 @@ const SolarDemo = (props) => {
         var buf = new Uint8Array(event.target.value.buffer);
         console.log(buf);
         
-        //document.getElementById('heartRateMeasurement').innerHTML = "Heart Rate measurement : " + buf[1].toString();
-        //document.getElementById('energyExpended').innerHTML = "Energy expended : " + buf[3].toString();
-        //document.getElementById('bodySensorLocation').innerHTML = "Body sensor location : " + buf[6].toString();
-        // addDataToCHart(buf[1]);
-        //console.log(JSON.stringify(buf));
         createLogElement(buf, 2, "Lux NOTIFICATION");
         updateLuxDataset(0, buf[0]+(buf[1]<<8))
     }
@@ -297,20 +240,6 @@ const SolarDemo = (props) => {
     <Popover id="popover-trigger-hover-focus" title="Popover bottom">
       <strong>Info :</strong> Enable the reception of notifications from the connected device. <br />
       Is required to display data on the chart.
-    </Popover>
-  );
-    
-  const popoverReadButton = (
-    <Popover id="popover-trigger-hover-focus" title="Popover bottom">
-      <strong>Info :</strong> Read the body sensor location<br />
-      Example : <br />
-      0x 4 : Hand
-    </Popover>
-  );
-    
-  const popoverResetButton = (
-    <Popover id="popover-trigger-hover-focus" title="Popover bottom">
-      <strong>Info :</strong> Reset the energy expended.
     </Popover>
   );
 

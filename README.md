@@ -21,6 +21,7 @@ Here is the list of STM32WBA applications supported by this Bluetooth® web appl
 -   Data Throughput
 -   Peer To Peer Router
 -   Health Thermometer
+-   Solar DEemo Server
 
 Example of the interface when a connection is established with Firmware Update Over The Air application and HeartRate application
 ![Firmware Update Over The Air on smartphone & Heart Rate on PC](/public/illustrations/pannelExample.PNG "Firmware Update Over The Air on smartphone & Heart Rate on PC")
@@ -219,7 +220,27 @@ The Health Thermometer binary file has to be flashed in the microcontroller.
 For more information about this application, please refer to [STM32WBA Health Thermometer](https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32WBA_Health_Thermometer).
 
 ***
+## **Solar DEMO**
 
+The Solar Demo Profile is used by SolarDemo running on STM32WBAx. 
+The Solar Demo interafce proposes a button to enable/disable notifications. 
+
+### **Requirements**
+
+Example with the [NUCLEO-WBA25] (Not ye availbal : On demand - code will be shared on STM32hotSpot) .  
+
+
+
+### **Follow the next steps to learn how to use the application Health Thermometer**
+
+**Step 1.** Start the STM32WBA board with the Solar demo application flashed in and activate the Bluetooth® on your machine.   
+**Step 2.** Open [this](https://applible.github.io/Web_Bluetooth_App_WBA/ "https://applible.github.io/Web_Bluetooth_App_WBA") web page in your browser.  
+**Step 3.** Click on the connect button then select Solar_xx in the device list and click pair.  
+*You are now connected*  
+**Step 4.** Click on Solar Panle to show the interface. 
+
+
+***
 # **Troubleshooting**  
 
 Caution : Issues and the pull-requests are not supported to submit problems or suggestions related to the software delivered in this repository. This example is being delivered as-is, and not necessarily supported by ST.
