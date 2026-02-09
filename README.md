@@ -21,7 +21,7 @@ Here is the list of STM32WBA applications supported by this Bluetooth® web appl
 -   Data Throughput
 -   Peer To Peer Router
 -   Health Thermometer
--   Solar DEemo Server
+-   Solar Demo Server
 
 Example of the interface when a connection is established with Firmware Update Over The Air application and HeartRate application
 ![Firmware Update Over The Air on smartphone & Heart Rate on PC](/public/illustrations/pannelExample.PNG "Firmware Update Over The Air on smartphone & Heart Rate on PC")
