@@ -8,4 +8,5 @@
 | react | Meta Platforms, Inc. and affiliates | MIT | https://github.com/facebook/react/blob/main/LICENSE
 | react-bootstrap | Stephen J. Collings, Matthew Honnibal, Pieter Vanderwerff | MIT | https://github.com/react-bootstrap/react-bootstrap/blob/master/LICENSE
 | react-chartjs-2 | Jeremy Ayerst | MIT | https://github.com/reactchartjs/react-chartjs-2/blob/master/LICENSE
+| cbor.js | Patrick Gansterer (paroga) | MIT | https://github.com/paroga/cbor-js/blob/master/LICENSE
 

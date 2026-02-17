@@ -1,5 +1,5 @@
 // ******************************************************************************
-// * @file    Ota.js
+// * @file    P2Prouter.js
 // * @author  MCD Application Team
 // *
 //  ******************************************************************************
@@ -33,9 +33,6 @@ const LOST = "05";
 // Write forward Characteristic, led level
 const LED_OFF = "00";
 const LED_ON = "01";
-const ALL_END_DEV = "FF";
-const ALL_ON = "AA";
-const ALL_OFF = "BB";
 
 const SWITCH_OFF = "00";
 const SWITCH_ON = "01";
@@ -43,9 +40,10 @@ const SWITCH_ON = "01";
 const NB_DEVICES = 14;
 const DEVICES_ALREADY_CREATED = false;
 
-let allIconToggle = false;
-let lightOn = [];
-let toggleStress = true;
+
+let lightOn = false;
+
+
 
 
 const P2Prouter = (props) => {
@@ -75,19 +73,17 @@ const P2Prouter = (props) => {
     }
   });
 
-  let devices = []; 
-  
+  let devices = []; // An Array to store all the devices in so you can use forEach on it
+  //let p2ptest = new deviceCreator(0,"P2PSRV_for_test", "00 11 22 33 44 55", false, false, false);
+
   function init(){    
     createDevices();
+    notifyCharacteristic.characteristic.startNotifications();
+    notifyCharacteristic.characteristic.oncharacteristicvaluechanged = notifHandler;
     deviceInfoCharacteristic.characteristic.startNotifications();
     deviceInfoCharacteristic.characteristic.oncharacteristicvaluechanged = notifHandler2;
-    setTimeout(function() {      
-      notifyCharacteristic.characteristic.startNotifications();
-      notifyCharacteristic.characteristic.oncharacteristicvaluechanged = notifHandler;
-    }, 500);
     document.getElementById("StartButton").style.display = "none";
     document.getElementById("headerLine").style.display = "flex";
-    
   }
   
   function notifHandler2(event) { 
@@ -141,7 +137,6 @@ const P2Prouter = (props) => {
     devices[indexDev].statusDev_ = statusDev;
     devices[indexDev].bdAdd_ = bdAddDev.toUpperCase();
     devices[indexDev].lightStatus_ = ledStatusDev;
-    lightOn[indexDev] = ledStatusDev;
     devices[indexDev].notifStatus_ = switchStatusDev;
     devices[indexDev].name_ = nameDev;
 
@@ -187,35 +182,36 @@ const P2Prouter = (props) => {
     let myWord;
     let btnLight = document.getElementById("light" + index);
     try {
-      if (lightOn[index] === LED_OFF) {
-        lightOn[index] = LED_ON;
+      if (lightOn == false) {
+        lightOn = true;
         myWord = new Uint8Array(2);
         myWord[0] = index;
         myWord[1] = parseInt(LED_ON, 16);
         
+        devices[index].lightStatus_ = LED_ON;
+        
        /* btnLight.innerHTML = "ON";
         btnLight.className = "btnLightON";*/
-        console.log("Send Light ON msg : ");
+        console.log("my word : ");
         console.log(myWord); 
         await ReadWriteCharacteristic.characteristic.writeValue(myWord);
         console.log("log element : ");
         createLogElement(myWord, 1, "P2Prouter WRITE");        
       } else {
-        lightOn[index] = LED_OFF;
+        lightOn = false;
         myWord = new Uint8Array(2);
         myWord[0] = index;
-        myWord[1] = parseInt(LED_OFF, 16);     
+        myWord[1] = parseInt(LED_OFF, 16);
+        
+        devices[index].lightStatus_ = LED_OFF;
+        
         
         /*btnLight.innerHTML = "OFF";
         btnLight.className = "btnLightOFF"*/
-        console.log("Send Light OFF msg : ");
-
         console.log(myWord);
         await ReadWriteCharacteristic.characteristic.writeValue(myWord);
         createLogElement(myWord, 1, "P2Prouter WRITE");
       }
-      console.log("### On est avant l update du boutton.");
-      console.log("Light Status = ", devices[index].lightStatus_);
 
       updateLedBtn(index);
     }
@@ -223,78 +219,6 @@ const P2Prouter = (props) => {
       console.log('2 : Argh! ' + error);
     }
   }
-
-  async function chenillardStressWF(){
-    console.log("*****STRESS******");
-    //setTimeout(function() { 
-     /*
-      for(let i = 0; i<NB_DEVICES; i++){
-        if(devices[i].statusDev_ === CONNECTED){
-          //setTimeout(function() {      
-            onEnableLightClick(i);
-            if(i === (NB_DEVICES-1)){
-              i=0;
-              console.log("I = 0 ");
-
-            }
-          //}, 1000);
-        }
-      }
-      */
-     while(toggleStress == true) {
-      toggleStress =false;
-      console.log("!= true");
-     }
-    toggleAllEndDevices();
-      
-
-   // }, 1000);
-   
-    console.log("**************");
-  }
-
-  async function toggleAllEndDevices(){
-    let myWord;
-
-    if(allIconToggle === false){
-      allIconToggle = true;
-      //document.getElementById("allIcon").style.filter = "";
-      myWord = new Uint8Array(2);
-      myWord[0] = parseInt(ALL_END_DEV, 16);
-      myWord[1] = parseInt(LED_ON, 16);
-      console.log("Toggle All End Devices ON: ");
-      console.log(myWord); 
-  
-      for(let i = 0; i<NB_DEVICES; i++){
-        if(devices[i].statusDev_ === CONNECTED){
-          lightOn[i] = LED_ON;
-        }
-      }
-    }
-    else {
-      allIconToggle = false;
-      //document.getElementById("allIcon").style.filter = "grayscale(100%)";
-      myWord = new Uint8Array(2);
-      myWord[0] = parseInt(ALL_END_DEV, 16);
-      myWord[1] = parseInt(LED_OFF, 16);
-      console.log("Toggle All End Devices OFF: ");
-      console.log(myWord); 
-      for(let i = 0; i<NB_DEVICES; i++){
-        if(devices[i].statusDev_ === CONNECTED){
-          lightOn[i] = LED_OFF;
-        }
-      }
-    }
-    await ReadWriteCharacteristic.characteristic.writeValue(myWord);
-
-    
-    setTimeout(function() { 
-        
-      toggleStress = true;
-      chenillardStressWF();   
-    }, 1000);
-  }
-
 
 
 
@@ -455,29 +379,21 @@ const P2Prouter = (props) => {
 //<div className="container">
 
 
-//<button className="secondaryButton me-1" type="button" onClick={chenillardStressWF} id="">STRESS</button>
- 
-
-
-  return (
-  
-  <div className='bigBoxDevices'>
+    return (
     
-    <button className="secondaryButton me-1" type="button" onClick={init} id="StartButton">START</button>
-    
-    <div className='headerLine smallBoxDevice' id="headerLine" style={{"display": "none"}}>
-      <p className='pIndex'> Index </p>
-      <p className='pStatus'> Status </p>
-      <p className='pName'> Name </p>
-      <p className='pBd'> Bd Address </p>
-      <p className='pLED'> LED Status </p>
-      <p className='pAlert'> Button Status </p>
+    <div className='bigBoxDevices'>
+      <button className="secondaryButton me-1" type="button" onClick={init} id="StartButton">START</button>
+      
+      <div className='headerLine smallBoxDevice' id="headerLine" style={{"display": "none"}}>
+        <p className='pIndex'> Index </p>
+        <p className='pStatus'> Status </p>
+        <p className='pName'> Name </p>
+        <p className='pBd'> Bd Address </p>
+        <p className='pLED'> LED Status </p>
+        <p className='pAlert'> Button Status </p>
 
+      </div>
     </div>
-
-
-  </div>
-
   );
 };
 

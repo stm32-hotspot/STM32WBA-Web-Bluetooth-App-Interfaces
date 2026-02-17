@@ -1,5 +1,5 @@
 // ******************************************************************************
-// * @file    P2Pserver.js
+// * @file    HT.js
 // * @author  MCD Application Team
 // *
 //  ******************************************************************************
@@ -13,7 +13,7 @@
 //  * If no LICENSE file comes with this software, it is provided AS-IS.
 //  *
 //  ******************************************************************************
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import imagelightOffBlue from '../images/lightOffBlue.svg';
 import imagelightOnBlue from '../images/lightOnBlue.svg';
 import imagelightOffPink from '../images/lightOffPink.svg';

@@ -112,10 +112,7 @@ const HeartRate = (props) => {
             case "00002a39-0000-1000-8000-00805f9b34fb" : 
                 writeCharacteristic = element;
             break;
-           /* case "0000fe11-8e22-4541-9d4c-21edae82ed19":
-                rebootCharacteristic = element;
-                displayRebootPanel = "block";
-            break;*/
+
             default:
                 console.log("# No characteristics find..");
         }

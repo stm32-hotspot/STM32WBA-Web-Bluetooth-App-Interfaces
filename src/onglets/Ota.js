@@ -13,17 +13,18 @@
 //  * If no LICENSE file comes with this software, it is provided AS-IS.
 //  *
 //  ******************************************************************************
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Buffer } from 'buffer';
-import { createLogElement } from "../components/Header";
+import { createLogElement, startOtaUpdate} from "../components/Header";
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import iconInfo from '../images/iconInfo.svg';
+
+import { deviceId } from '../components/Header.js';
 
 const REBOOT = 1;
 const READY_TO_RECEIVE = 2;
 const ERROR_NO_FREE = 3;
 const CHUNK_LENGTH = 240;
-const SECTOR_SIZE = 8*1024;
 
 let writeAddressCharacteristic;
 let indicateCharacteristic;
@@ -53,8 +54,79 @@ const Ota = (props) => {
                 console.log("# No characteristics find..");
         }
     });
+
+    const [githubUrl, setGithubUrl] = useState(localStorage.getItem('githubUrl') || '');
+    const [binaryFileName, setBinaryFileName] = useState(''); 
+    const [manualFileSelection, setManualFileSelection] = useState(false);
+    const [selectedAction, setSelectedAction] = useState('application')
+  
+    useEffect(() => {
+      const handleGithubUrlUpdate = (event) => {
+        setGithubUrl(event.detail);
+        const fileName = event.detail.split('/').pop();
+        setBinaryFileName(fileName);
+        fetchBinaryFromGitHub(event.detail);
+        setManualFileSelection(false); // Reset manual file selection when a new GitHub URL is set
+      };
+      window.addEventListener('githubUrlUpdated', handleGithubUrlUpdate);
+    
+      if (githubUrl) {
+        fetchBinaryFromGitHub(githubUrl);
+        const fileName = githubUrl.split('/').pop();
+        setBinaryFileName(fileName);
+        setSelectedAction('application');
+        let actionChoice = document.getElementById("startSectorInput");
+        if(deviceId == '6')
+        {
+          actionChoice.value = "100000";
+        }
+        else
+        {
+          if(deviceId == 'X'){
+            actionChoice.value = "040000";
+          }
+          else {
+            actionChoice.value = "080000";
+          }
+        }        
+        uploadAction = "002";
+        if (selectedAction === 'application') {
+          document.getElementById("applicationSelectFilePart").style.display = "block";
+        }
+      }
+
+      const element = document.getElementById('ota-section');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    
+      return () => {
+        window.removeEventListener('githubUrlUpdated', handleGithubUrlUpdate);
+      };
+    }, [githubUrl]);
+
     
   document.getElementById("readmeInfo").style.display = "none";
+
+  const fetchBinaryFromGitHub = async (url) => {
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.content) {
+        const binaryContent = Buffer.from(data.content, 'base64');
+        fileContent = new Uint8Array(binaryContent);
+        fileLength = fileContent.length;
+      }
+    } catch (error) {
+      console.error("Error fetching binary from GitHub: ", error);
+    }
+    // Reset manual file content when a new GitHub URL is set
+    if (manualFileSelection) {
+      fileContent = null;
+      fileLength = 0;
+      setManualFileSelection(false);
+    }
+  };
    
   // Authorize the reception of indications / notifications
     console.log('Indications ON');
@@ -90,16 +162,13 @@ const Ota = (props) => {
         hexStringFistPart = parseInt(hexStringFistPart, 16);
         hexStringSecondePart = parseInt(hexStringSecondePart, 16);
         hexStringThirdPart = parseInt(hexStringThirdPart, 16);
-        nbSectorHex = nbSector.toString(16);
 
-        // dec : 002 008 032 000
-        // hex : 02 08 20 00
         let myWord = new Uint8Array(5);
         myWord[0] = uploadAction; // Action 
         myWord[1] = hexStringFistPart; // Address
         myWord[2] = hexStringSecondePart; // Address
         myWord[3] = hexStringThirdPart; // Address
-        myWord[4] = nbSectorHex; // Address
+        myWord[4] = nbSector; // Address
         try {
             await writeAddressCharacteristic.characteristic.writeValue(myWord);
             console.log("Writing >> " + myWord);
@@ -192,8 +261,14 @@ const Ota = (props) => {
     }
 
     async function calculateNbSector(){
+      let SECTOR_SIZE;
+      if (deviceId === 'X') {
+        SECTOR_SIZE = 4 * 1024;
+      } else {
+        SECTOR_SIZE = 8 * 1024;
+      }
       fileLength = fileContent.length;
-      nbSector = fileLength/SECTOR_SIZE;
+      nbSector = fileLength / SECTOR_SIZE;
       nbSector = Math.ceil(nbSector);
       document.getElementById("nbSector").value = nbSector;
 
@@ -203,7 +278,9 @@ const Ota = (props) => {
       console.log(nbSector);
     }
 
-  async function onActionRadioButtonClick(){
+  async function onActionRadioButtonClick(event){
+    const actionValue = event.target.value;
+    setSelectedAction(actionValue);
     document.getElementById('configDiv').style="display:block";
     let selectedAction = document.getElementsByName("selectAction");
     for (let i = 0; i < selectedAction.length; i++){
@@ -224,10 +301,42 @@ const Ota = (props) => {
         document.getElementById("userDataSelectFilePart").style="display:none";
         document.getElementById("applicationSelectFilePart").style="display:block";
         uploadAction = "002";
-        actionChoice.value = "07C000";
+        if(deviceId == '6')
+        {
+          actionChoice.value = "100000";
+        }
+        else
+        {
+          if(deviceId == 'X'){
+            actionChoice.value = "040000";
+          }
+          else {
+            actionChoice.value = "080000";
+          }
+        }   
 
         break;
     }
+  }
+
+  async function showFile(input) {
+    console.log("FileLoader");
+    let uploadButton = document.getElementById("uploadButton");
+    uploadButton.disabled = true;
+    fileContent = input.target.files[0];
+    let reader = new FileReader();
+    reader.readAsArrayBuffer(fileContent);
+    reader.onload = async function () {
+        let uint8View = new Uint8Array(reader.result);
+        console.log(uint8View);
+        fileContent = uint8View;
+        // Update the fileLength as well if needed
+        fileLength = fileContent.length;
+    }
+    reader.onerror = function (error) {
+        console.log('Error: ', error);
+    };
+    uploadButton.disabled = false;
   }
 
   function checkBoxClicForNbSector() {
@@ -256,7 +365,7 @@ const Ota = (props) => {
   const popoverApplicationBinary = (
     <Popover id="popover-trigger-hover-focus" title="Popover bottom">
       <strong>Info :</strong> Choose either a file from your device or file fetch from the STMicroelectronics Hotspot. <br />
-      Then choose the first sector address. (default 0x07C000).
+      Then choose the first sector address. (default 0x080000).
     </Popover>
   );
 
@@ -273,7 +382,7 @@ const Ota = (props) => {
             </div>
           <div className="input-group">
             <div className="input-group-text">
-              <input className="form-check-input mt-0" type="radio" value="application" name='selectAction' onClick={onActionRadioButtonClick} ></input>
+              <input className="form-check-input mt-0" type="radio" value="application" name='selectAction' onClick={onActionRadioButtonClick} checked={selectedAction === 'application'} ></input>
             </div>
             <input type="text" disabled={true} className="form-control" aria-label="Text input with radio button" value="Application Update"></input>
           </div>
@@ -291,7 +400,7 @@ const Ota = (props) => {
             </div>
           </div>
           
-          <div id='applicationSelectFilePart' style={{"display": "none"}}>
+          <div id='applicationSelectFilePart' style={{"display": "block"}}>
             <div id='applicationBinaryList' style={{"display": "block"}}>
               <h3>Application
                 <OverlayTrigger
@@ -304,12 +413,29 @@ const Ota = (props) => {
             </div>
           </div>
 
-          <div id='configDiv'style={{"display": "none"}}>
+          <div id='configDiv'style={{"display": "block"}}>
+
+          <div className="input-group mb-3">
+              <label>Choosing manually the binary file &nbsp;</label> 
+              <label class="containerCheckBox" >
+              <input type="checkbox" id="manualFileCheckbox" onChange={() => setManualFileSelection(!manualFileSelection)} />
+              <span class="checkmark"></span>
+              </label>
+          </div>
+
+          {manualFileSelection ? (
             <div className="mt-3 mb-3">
               <input className="form-control fileInput" type="file" onChange={(e) => showFile(e)}></input>
-            </div> 
+            </div>
+            ) : githubUrl && (
             <div className="input-group mb-3">
-              <span className="input-group-text" id="startSectorChoise">Address 0x</span>
+            <span className="input-group-text">Selected Binary File</span>
+            <span className="input-group-text"><strong>{binaryFileName}</strong></span>
+            </div>
+          )}
+
+            <div className="input-group mb-3">
+              <span className="input-group-text" id="startSectorChoise">Address Offset 0x</span>
               <input type="text" className="form-control" placeholder="..." aria-describedby="startSectorChoise" maxLength="6" id="startSectorInput" ></input>
             </div>
             <div className="input-group mb-3">

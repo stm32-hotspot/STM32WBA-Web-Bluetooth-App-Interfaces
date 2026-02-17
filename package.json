@@ -1,16 +1,24 @@
 {
   "homepage": "https://AppliBLE.github.io/Web_Bluetooth_App_WBA",
   "name": "web-bluetooth-app",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "private": true,
   "dependencies": {
+    "@cdot/cbor": "^1.0.5",
     "@popperjs/core": "^2.11.5",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^12.1.4",
     "@testing-library/user-event": "^13.5.0",
+    "body-parser": "^1.20.2",
     "bootstrap": "^5.1.3",
+    "boxicons": "^2.1.4",
     "buffer": "^6.0.3",
+    "cbor": "^9.0.2",
+    "cbor-web": "^9.0.2",
     "chart.js": "^3.7.1",
+    "commander": "^12.0.0",
+    "cors": "^2.8.5",
+    "crc": "^4.3.2",
     "react": "^18.0.0",
     "react-bootstrap": "^2.3.1",
     "react-chartjs-2": "^4.1.0",
@@ -25,9 +33,9 @@
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -50,6 +58,8 @@
   },
   "devDependencies": {
     "gh-pages": "^4.0.0",
-    "marked": "^4.2.4"
+    "marked": "^4.2.4",
+    "react-app-rewired": "^2.2.1",
+    "stream-browserify": "^3.0.0"
   }
 }
