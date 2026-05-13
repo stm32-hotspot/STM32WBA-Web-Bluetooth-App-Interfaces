@@ -64,8 +64,12 @@ const PulseOximeter = (props) => {
                 },
             });
             setOxygenSaturationChartInstance(newOxygenSaturationChartInstance);
+
+            return () => {
+                newOxygenSaturationChartInstance.destroy();
+            };
         }
-    }, [oxygenSaturationChartContainer]);
+    }, []);
 
     useEffect(() => {
         if (heartRateChartContainer && heartRateChartContainer.current) {
@@ -94,8 +98,12 @@ const PulseOximeter = (props) => {
                 },
             });
             setHeartRateChartInstance(newHeartRateChartInstance);
+
+            return () => {
+                newHeartRateChartInstance.destroy();
+            };
         }
-    }, [heartRateChartContainer]);
+    }, []);
 
     const updateOxygenSaturationChart = (oxygenSaturationValue) => {
         const currentTime = new Date().toLocaleTimeString("en-US", {

@@ -1,0 +1,566 @@
+<!--
+******************************************************************************
+* @file    index.html
+* @author  MCD Application Team
+*
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2022-2023 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <style>
+      #readmeInfo {
+        visibility: hidden;
+      }
+    </style>
+    <title>Web bluetooth App WBA</title>
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <div class="row justify-content-center justifyText" id="readmeInfo">
+      <div class="col-12">
+        <div class="readmeCard">
+          <div class="readmeHeader">Documentation and User Guide</div>
+          <div class="readmeTabs" id="readmeTabs"></div>
+          <div class="readmeBody" id="readmeBody">
+        <!-- ################ START OF READ ME ##################-->
+
+        <h1 id="stm32wba-web-bluetooth®-app-interfaces"><strong>STM32WBA Web Bluetooth® App Interfaces</strong></h1>
+        <p>Two GitHub pages hosting the web app are available:</p>
+        <ul>
+          <li><a href="https://applible.github.io/ST-Web-Bluetooth/" title="https://applible.github.io/ST-Web-Bluetooth/">Web Bluetooth® <strong>HOME PAGE</strong></a>.</li>
+          <li><a href="https://AppliBLE.github.io/Web_Bluetooth_App_WB" title="https://AppliBLE.github.io/Web_Bluetooth_App_WB">Web Bluetooth® <strong>STM32WB</strong></a>.</li>
+        </ul>
+        <p>No installation is required to use the app this way.</p>
+        <h1 id="introduction"><strong>Introduction</strong></h1>
+        <p>This is a web interface created with <a href="https://reactjs.org/" title="https://reactjs.org/">React 18</a> and <a href="https://getbootstrap.com/" title="https://getbootstrap.com/">Bootstrap 5</a>.<br>This web interface uses Web Bluetooth® APIs to establish a Bluetooth® LE connection and exchange data with an STM32WBA board.</p>
+        <p>This application is compatible with the following projects from the <a href="https://github.com/STMicroelectronics/STM32CubeWBA" title="https://github.com/STMicroelectronics/STM32CubeWBA">STM32CubeWBA firmware</a>:</p>
+        <table class="table table-sm table-bordered align-middle">
+          <thead>
+            <tr>
+              <th>Application</th>
+              <th>NUCLEO-WBA55CG</th>
+              <th>NUCLEO-WBA65RI</th>
+              <th>NUCLEO-WBA25CE1</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Peer To Peer Server</td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_p2pServer">Project</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_p2pServer">Project</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_p2pServer">Project</a></td>
+            </tr>
+            <tr>
+              <td>Peer To Peer Router</td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_p2pRouter">Project</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_p2pRouter">Project</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_p2pRouter">Project</a></td>
+            </tr>
+            <tr>
+              <td>HeartRate</td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_HeartRate">Project</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_HeartRate">Project</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_HeartRate">Project</a></td>
+            </tr>
+            <tr>
+              <td>Firmware Update Over The Air</td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_ApplicationInstallManager">Project</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_ApplicationInstallManager">Project</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_ApplicationInstallManager">Project</a></td>
+            </tr>
+            <tr>
+              <td>Data Throughput</td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_DataThroughput_Server">Project</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_DataThroughput_Server">Project</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_DataThroughput_Server">Project</a></td>
+            </tr>
+            <tr>
+              <td>Health Thermometer</td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_HealthThermometer">Project</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_HealthThermometer">Project</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_HealthThermometer">Project</a></td>
+            </tr>
+            <tr>
+              <td>Electrocardiogram</td>
+              <td>-</td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_GenericHealth_ECG_ota">Project</a></td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>Pulse Oximeter</td>
+              <td>-</td>
+              <td>-</td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_GenericHealth_PulseOximeter">Project</a></td>
+            </tr>
+          </tbody>
+        </table>
+        <p>The following table lists additional STM32WBA applications available on STM32 Hotspot and supported by this Bluetooth® web application:</p>
+        <table class="table table-sm table-bordered align-middle">
+          <thead>
+            <tr>
+              <th>Application</th>
+              <th>STM32 Hotspot link</th>
+              <th>Supported target</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>BLE OEMiROT FOTA</td>
+              <td><a href="https://github.com/stm32-hotspot/STM32WBA-BLE-OEMiROT-FOTA">Link</a></td>
+              <td>STM32WBA65I-DK1</td>
+            </tr>
+            <tr>
+              <td>Continuous Glucose Monitoring</td>
+              <td><a href="https://github.com/stm32-hotspot/STM32WBA-BLE-ContinuousGlucoseMonitoring">Link</a></td>
+              <td>NUCLEO-WBA55CG</td>
+            </tr>
+            <tr>
+              <td>Blood Pressure</td>
+              <td><a href="https://github.com/stm32-hotspot/STM32WBA-BLE-BloodPressure">Link</a></td>
+              <td>NUCLEO-WBA55CG</td>
+            </tr>
+            <tr>
+              <td>Running Speed and Cadence</td>
+              <td><a href="https://github.com/stm32-hotspot/STM32WBA-BLE-RunningSpeedAndCadence">Link</a></td>
+              <td>NUCLEO-WBA55CG</td>
+            </tr>
+            <tr>
+              <td>Weight Scale</td>
+              <td><a href="https://github.com/stm32-hotspot/STM32WBA-BLE-WeightScale">Link</a></td>
+              <td>NUCLEO-WBA55CG</td>
+            </tr>
+            <tr>
+              <td>AI Fan Control</td>
+              <td><a href="https://github.com/stm32-hotspot/STM32WBA-BLE-AI-Fan-Control">Link</a></td>
+              <td>STM32WBA55G-DK1</td>
+            </tr>
+            <tr>
+              <td>Solar Panel Demo</td>
+              <td>Coming soon</td>
+              <td>NUCLEO-WBA25CE1</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Example of the interface when connections are established to the Firmware Update Over The Air application and the HeartRate application:
+        <img src="illustrations/pannelExample.PNG" alt="Firmware Update Over The Air on smartphone &amp; Heart Rate on PC" title="Firmware Update Over The Air on smartphone &amp; Heart Rate on PC"></p>
+        <h1 id="setup"><strong>Setup</strong></h1>
+        <h2 id="hardware-requirements">Hardware requirements</h2>
+        <p>To use the web interface, one of the following <strong>STM32WBA</strong> boards is necessary.</p>
+        <ul>
+          <li><a href="https://www.st.com/en/evaluation-tools/nucleo-wba55cg.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba55cg.html">NUCLEO-WBA5x</a></li>
+          <li><a href="https://www.st.com/en/evaluation-tools/nucleo-wba65ri.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba65ri.html">NUCLEO-WBA6x</a></li>
+          <li><a href="https://www.st.com/en/evaluation-tools/nucleo-wba25ce1.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba25ce1.html">NUCLEO-WBA2x</a></li>
+        </ul>
+        <p>A PC or smartphone is required to open the web interface in a browser.</p>
+        <p><strong>Web Bluetooth limitation:</strong> Web Bluetooth APIs are not available in all browsers or operating systems. Use a compatible browser (such as Chrome or Edge) and open the page in a secure context (HTTPS or localhost).</p>
+        <h2 id="software-requirements">Software requirements</h2>
+        <p>For more information about STM32CubeWBA Software Architecture, click <a href="https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32CubeWBA_SW_Architecture" title="https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32CubeWBA_SW_Architecture">here</a>.</p>
+        <p><br>Refer to <a href="https://www.st.com/resource/en/user_manual/dm00403500-stm32cubeprogrammer-software-description-stmicroelectronics.pdf" title="https://www.st.com/resource/en/user_manual/dm00403500-stm32cubeprogrammer-software-description-stmicroelectronics.pdf">UM2237</a> to learn how to install and use STM32CubeProgrammer.  </p>
+        <p>For more information about Bluetooth® LE, please refer to the <a href="https://wiki.st.com/stm32mcu/wiki/Connectivity:BLE_overview" title="https://wiki.st.com/stm32mcu/wiki/Connectivity:BLE_overview">STMicroelectronics Wiki</a>.</p>
+        <h1 id="users-guide"><strong>User's guide</strong></h1>
+        <h2 id="peer-to-peer-server"><strong>Peer To Peer Server</strong></h2>
+        <p>The P2P Server application demonstrates bidirectional Bluetooth® LE communication between a client and a server. The P2P Server interface proposes a set of buttons to interact with the connected device. A reboot panel is available only if a P2P Server service with the reboot OTA characteristic is detected on the device (see the Firmware Update Over The Air section for more information about OTA).  </p>
+        <h3 id="requirements"><strong>Requirements</strong></h3>
+        <p>Flash the project corresponding to your NUCLEO board using STM32CubeProgrammer.</p>
+        <table class="table table-sm table-bordered align-middle">
+          <thead>
+            <tr>
+              <th>Supported NUCLEO board</th>
+              <th>BLE_p2pServer</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba55cg.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba55cg.html">NUCLEO-WBA55CG</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_p2pServer" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_p2pServer">Project</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba65ri.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba65ri.html">NUCLEO-WBA65RI</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_p2pServer" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_p2pServer">Project</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba25ce1.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba25ce1.html">NUCLEO-WBA25CE1</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_p2pServer" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_p2pServer">Project</a></td>
+            </tr>
+          </tbody>
+        </table>
+        <h3 id="follow-the-next-steps-to-learn-how-to-use-the-application-p2p-server"><strong>Follow these steps to learn how to use the P2P Server application</strong></h3>
+        <p><strong>Step 1.</strong> Power on the STM32WBA board with the P2P Server application flashed and activate Bluetooth® on your machine.<br><strong>Step 2.</strong> Open <a href="https://applible.github.io/Web_Bluetooth_App_WBA" title="https://applible.github.io/Web_Bluetooth_App_WBA">this</a> web page in your browser.<br><strong>Step 3.</strong> Click the Connect button, select <code>P2PS_WBAxx</code> in the device list, and click Pair.<br><img src="illustrations/Connection_popup.png" alt="Step 3" title="Step 3"><br><strong>Step 4.</strong> Click P2P Server to show the interface and <strong>read the tooltips</strong>.<br><em>You are now connected.</em><br><em>You can now interact with the connected device.</em><br><img src="illustrations/picture5.png" alt="Step 4" title="Step 4">  </p>
+        <p>For more information about this application, please refer to <a href="https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32WBA_Peer_To_Peer" title="https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32WBA_Peer_To_Peer">STM32WBA P2P Server</a>.</p>
+        <h2 id="firmware-update-over-the-air-ota"><strong>Firmware Update Over The Air (OTA)</strong></h2>
+        <p>The Firmware Update Over The Air (OTA) application allows a remote device to update the current application.</p>
+        <h3 id="requirements-1"><strong>Requirements</strong></h3>
+        <p>Links to the projects associated with each NUCLEO board:</p>
+        <table class="table table-sm table-bordered align-middle">
+          <thead>
+            <tr>
+              <th>Supported NUCLEO board</th>
+              <th>BLE_ApplicationInstallManager</th>
+              <th>BLE_p2pServer_ota</th>
+              <th>BLE_HeartRate_ota</th>
+              <th>BLE_GenericHealth_ECG_ota</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba55cg.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba55cg.html">NUCLEO-WBA55CG</a></td>
+                <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_ApplicationInstallManager" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_ApplicationInstallManager">Project</a></td>
+                <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_p2pServer_ota" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_p2pServer_ota">Project</a></td>
+                <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_HeartRate_ota" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_HeartRate_ota">Project</a></td>
+                <td>-</td>
+            </tr>
+            <tr>
+              <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba65ri.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba65ri.html">NUCLEO-WBA65RI</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_ApplicationInstallManager" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_ApplicationInstallManager">Project</a></td>
+                <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_p2pServer_ota" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_p2pServer_ota">Project</a></td>
+                <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_HeartRate_ota" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_HeartRate_ota">Project</a></td>
+                <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_GenericHealth_ECG_ota" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_GenericHealth_ECG_ota">Project</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba25ce1.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba25ce1.html">NUCLEO-WBA25CE1</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_ApplicationInstallManager" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_ApplicationInstallManager">Project</a></td>
+                <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_p2pServer_ota" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_p2pServer_ota">Project</a></td>
+                <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_HeartRate_ota" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_HeartRate_ota">Project</a></td>
+                <td>-</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>The BLE_ApplicationInstallManager application, associated with a Bluetooth® LE application embedding the OTA service, manages firmware updates over the air for a Bluetooth® LE application.</p>
+        <p>The BLE_ApplicationInstallManager application must run with Bluetooth® LE applications embedding the OTA service, such as BLE_HeartRate_ota, BLE_p2pServer_ota, or BLE_GenericHealth_ECG_ota.</p>
+        <p>BLE_ApplicationInstallManager is loaded at memory address <em>0x08000000</em>. The OTA application is loaded at memory address <em>0x08006000</em>.</p>
+        <h3 id="follow-the-next-steps-to-learn-how-to-use-the-application-firmware-update-over-the-air"><strong>Follow these steps to learn how to use the Firmware Update Over The Air application.</strong></h3>
+        <p><strong>Step 1.</strong> Power on the STM32WBA board with the OTA application flashed and enable Bluetooth® on your machine.<br><strong>Step 2.</strong> Open <a href="https://applible.github.io/Web_Bluetooth_App_WBA" title="https://applible.github.io/Web_Bluetooth_App">this</a> web page in your browser.<br><strong>Step 3.</strong> Click the Connect button, select your device from the list, and click Pair.<br><em>You are now connected.</em><br><strong>Step 4.</strong> Choose between updating the User Configuration Data and the Application.<br><strong>Step 5.</strong> Select the binary to be downloaded.<br>
+        <strong>Step 6. (Optional)</strong> Choose the first sector address from which the file will be written.<br><strong>Step 7.</strong> Click the Upload button and wait for disconnection.<br><img src="illustrations/FUOTAInterface.png" alt="FUOTA interface" title="FUOTA Interface"><br><em>Congratulations, the new application/wireless stack is running and can be connected.</em>  </p>
+        <p>For more information about this application, please refer to <a href="https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32WBA_FUOTA" title="https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32WBA_FUOTA">STM32WBA FUOTA</a>.</p>
+        <h2 id="heartrate"><strong>HeartRate</strong></h2>
+        <p>The HeartRate application measures heart rate data and other information, such as body sensor location and energy expended. The HeartRate interface proposes a set of buttons and text input to interact with the connected device, as well as a chart displaying the received heart rate data. A reboot panel is available only if a HeartRate service with the reboot OTA characteristic is detected on the device (see the Firmware Update Over The Air section for more information about OTA).  </p>
+        <h3 id="requirements-2"><strong>Requirements</strong></h3>
+        <p>Flash the project corresponding to your NUCLEO board using STM32CubeProgrammer.</p>
+        <table class="table table-sm table-bordered align-middle">
+          <thead>
+            <tr>
+              <th>Supported NUCLEO board</th>
+              <th>BLE_HeartRate</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba55cg.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba55cg.html">NUCLEO-WBA55CG</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_HeartRate" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_HeartRate">Project</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba65ri.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba65ri.html">NUCLEO-WBA65RI</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_HeartRate" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_HeartRate">Project</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba25ce1.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba25ce1.html">NUCLEO-WBA25CE1</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_HeartRate" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_HeartRate">Project</a></td>
+            </tr>
+          </tbody>
+        </table>
+        <h3 id="follow-the-next-steps-to-learn-how-to-use-the-application-heartrate"><strong>Follow these steps to learn how to use the HeartRate application</strong></h3>
+        <p><strong>Step 1.</strong> Power on the STM32WBA board with the HeartRate application flashed and activate Bluetooth® on your machine.<br><strong>Step 2.</strong> Open <a href="https://applible.github.io/Web_Bluetooth_App_WBA" title="https://applible.github.io/Web_Bluetooth_App_WBA">this</a> web page in your browser.<br><strong>Step 3.</strong> Click the Connect button, select <code>HRSTM</code> in the device list, and click Pair.<br><em>You are now connected.</em><br><strong>Step 4.</strong> Click HeartRate to show the interface and read the tooltips.<br><em>You can now interact with the connected device.</em><br><img src="illustrations/rightPannel.PNG" alt="Step 4" title="Step 4">  </p>
+        <p>For more information about this application, please refer to <a href="https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32WBA_HeartRate#Software_and_system_requirements" title="https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32WBA_HeartRate#Software_and_system_requirements">STM32WBA Heart Rate</a>.</p>
+        <h2 id="data-throughput"><strong>Data Throughput</strong></h2>
+        <p>The Data Throughput application measures upload (data transfer from the web interface to the connected device) and download (data transfer from the connected device to the web interface) throughput between the web app and the connected device. The Data Throughput interface proposes two panels, one to display uploaded data and the other to display downloaded data. Each panel has a data throughput chart and a button to reset the chart, and the upload panel also has a button to start or stop data upload.  </p>
+        <h3 id="requirements-3"><strong>Requirements</strong></h3>
+        <p>Flash the project corresponding to your NUCLEO board using STM32CubeProgrammer.</p>
+        <table class="table table-sm table-bordered align-middle">
+          <thead>
+            <tr>
+              <th>Supported NUCLEO board</th>
+              <th>BLE_DataThroughput_Server</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba55cg.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba55cg.html">NUCLEO-WBA55CG</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_DataThroughput_Server" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_DataThroughput_Server">Project</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba65ri.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba65ri.html">NUCLEO-WBA65RI</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_DataThroughput_Server" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_DataThroughput_Server">Project</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba25ce1.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba25ce1.html">NUCLEO-WBA25CE1</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_DataThroughput_Server" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_DataThroughput_Server">Project</a></td>
+            </tr>
+          </tbody>
+        </table>
+        <h3 id="follow-the-next-steps-to-learn-how-to-use-the-application-data-throughput"><strong>Follow these steps to learn how to use the Data Throughput application</strong></h3>
+        <p><strong>Step 1.</strong> Power on the STM32WBA board with the Data Throughput application flashed and activate Bluetooth® on your machine.<br><strong>Step 2.</strong> Open <a href="https://applible.github.io/Web_Bluetooth_App_WBA/" title="https://applible.github.io/Web_Bluetooth_App_WBA">this</a> web page in your browser.<br><strong>Step 3.</strong> Click the Connect button, select <code>DT_SERVER</code> in the device list, and click Pair.<br><em>You are now connected.</em><br><strong>Step 4.</strong> Click Data Throughput to show the interface and read the tooltips.<br><em>You can now interact with the connected device.</em><br><img src="illustrations/datathroughput.png" alt="Step 4" title="Step 4">  </p>
+        <p>For more information about this application, please refer to <a href="https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32WBA_Data_Throughput" title="https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32WBA_Data_Throughput">STM32WBA Data Throughput</a>.</p>
+        <h2 id="peer-to-peer-router"><strong>Peer To Peer Router</strong></h2>
+        <p>The P2P Router application demonstrates STM32WBA acting at the same time as both: Bluetooth® LE central and peripheral, GATT server and client.</p>
+        <p>The P2P Router application scans to connect to P2P Server devices and accepts connections from the ST Web Bluetooth® app. It routes Bluetooth® LE messages received from both sides.</p>
+        <h3 id="requirements-4"><strong>Requirements</strong></h3>
+        <p>Flash the project corresponding to your NUCLEO board using STM32CubeProgrammer.</p>
+        <table class="table table-sm table-bordered align-middle">
+          <thead>
+            <tr>
+              <th>Supported NUCLEO board</th>
+              <th>BLE_p2pRouter</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba55cg.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba55cg.html">NUCLEO-WBA55CG</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_p2pRouter" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_p2pRouter">Project</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba65ri.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba65ri.html">NUCLEO-WBA65RI</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_p2pRouter" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_p2pRouter">Project</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba25ce1.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba25ce1.html">NUCLEO-WBA25CE1</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_p2pRouter" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_p2pRouter">Project</a></td>
+            </tr>
+          </tbody>
+        </table>
+        <p>You also need at least one P2P Server running on another STM32WBA/STM32WB Nucleo board.</p>
+        <h3 id="follow-the-next-steps-to-learn-how-to-use-the-application-p2p-router"><strong>Follow these steps to learn how to use the P2P Router application</strong></h3>
+        <p><strong>Step 1.</strong> Power the P2P Router board with the P2P Router application flashed and power the other boards with the P2P Server applications.<br><strong>Step 2.</strong> Activate Bluetooth® on your machine.<br><strong>Step 3.</strong> Open <a href="https://applible.github.io/Web_Bluetooth_App_WBA/" title="https://applible.github.io/Web_Bluetooth_App">this</a> web page in your browser.<br><strong>Step 4.</strong> Click the Connect button, select <code>P2PR_WBAxx</code> in the device list, and click Pair.<br><em>You are now connected.</em><br><strong>Step 5.</strong> Click P2P Router to show the interface and click the Start button.
+        <em>You can now interact with the connected device.</em><br><strong>Step 6.</strong> Power up to seven P2P Server devices near the P2P Router device.<br><strong>Step 7.</strong> On each click of B1, the P2P Router will scan and then connect to a nearby P2P Server device.<br><strong>Step 8.</strong> On the Web Bluetooth® interface, you can see devices appearing.<br><img src="illustrations/routerDevAppear.PNG" alt="Step 8" title="Step 8"><br><strong>Step 9.</strong> On a P2P Server device, a click on B1 sends a notification to the P2P Router.
+        This notification message is forwarded to the smartphone and displayed on the interface.<br><img src="illustrations/notifON.PNG" alt="Step 9" title="Step 9"><br><strong>Step 10.</strong> On the Web Bluetooth® interface, click the Light button to write a message to the corresponding P2P Server device. This write message is first sent to the P2P Router and then routed to its destination.<br><img src="illustrations/lightOn.PNG" alt="Step 10" title="Step 10"></p>
+        <p>For more information about this application, please refer to <a href="https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32WBA_Peer_To_Peer" title="https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32WBA_Peer_To_Peer">STM32WBA P2P Router</a>.</p>
+        <h2 id="health-thermometer"><strong>Health Thermometer</strong></h2>
+        <p>The Health Thermometer Profile is used to enable a data collection device to obtain data from a thermometer sensor that exposes the Health Thermometer Service.</p>
+        <p>This specification is compatible with any Bluetooth® core specification host [3] that includes the Generic Attribute Profile (GATT) specification and the Bluetooth® Low Energy Controller specification.</p>
+        <h3 id="requirements-5"><strong>Requirements</strong></h3>
+        <p>Flash the project corresponding to your NUCLEO board using STM32CubeProgrammer.</p>
+        <table class="table table-sm table-bordered align-middle">
+          <thead>
+            <tr>
+              <th>Supported NUCLEO board</th>
+              <th>BLE_HealthThermometer</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba55cg.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba55cg.html">NUCLEO-WBA55CG</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_HealthThermometer" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA55CG/Applications/BLE/BLE_HealthThermometer">Project</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba65ri.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba65ri.html">NUCLEO-WBA65RI</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_HealthThermometer" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_HealthThermometer">Project</a></td>
+            </tr>
+            <tr>
+              <td><a href="https://www.st.com/en/evaluation-tools/nucleo-wba25ce1.html" title="https://www.st.com/en/evaluation-tools/nucleo-wba25ce1.html">NUCLEO-WBA25CE1</a></td>
+              <td><a href="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_HealthThermometer" title="https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA25CE/Applications/BLE/BLE_HealthThermometer">Project</a></td>
+            </tr>
+          </tbody>
+        </table>
+        <h3 id="follow-the-next-steps-to-learn-how-to-use-the-application-health-thermometer"><strong>Follow these steps to learn how to use the Health Thermometer application</strong></h3>
+        <p><strong>Step 1.</strong> Power on the STM32WBA board with the Health Thermometer application flashed and activate Bluetooth® on your machine.<br><strong>Step 2.</strong> Open <a href="https://applible.github.io/Web_Bluetooth_App_WBA/" title="https://applible.github.io/Web_Bluetooth_App_WBA">this</a> web page in your browser.<br><strong>Step 3.</strong> Click the Connect button, select <code>HT_xx</code> in the device list, and click Pair.<br><em>You are now connected.</em><br><strong>Step 4.</strong> Click Health Thermometer to show the interface.
+        <img src="illustrations/HT.PNG" alt="Step 4" title="Step 4">  </p>
+        <p>For more information about this application, please refer to <a href="https://github.com/AppliBLE/STM32WBA_Binaries/tree/master/BLE_HealthThermometer" title="https://github.com/AppliBLE/STM32WBA_Binaries/tree/master/BLE_HealthThermometer">STM32WBA Health Thermometer</a>.</p>
+        <h1 id="troubleshooting"><strong>Troubleshooting</strong></h1>
+        <p>Caution: Issues and pull requests are not supported channels for submitting problems or suggestions related to the software delivered in this repository. This example is delivered as-is and is not necessarily supported by ST.</p>
+        <p>For any other questions related to the product, hardware performance or characteristics, tools, or environment, you can submit them to the ST Community on the STM32WBA MCU-related <a href="https://community.st.com/s/topic/0TO0X000000BSqSWAW/stm32-mcus" title="https://community.st.com/s/topic/0TO0X000000BSqSWAW/stm32-mcus">page</a>.</p>
+
+        <!-- ################ END OF READ ME ##################-->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function createReadmeTabs() {
+        const tabsHost = document.getElementById('readmeTabs');
+        const readmeBody = document.getElementById('readmeBody');
+
+        if (!tabsHost || !readmeBody) {
+          return;
+        }
+
+        const sourceNodes = Array.from(readmeBody.children);
+        const sections = [];
+        let currentSection = null;
+        let inUsersGuide = false;
+        const appSectionTitles = new Set([
+          'peer to peer server',
+          'firmware update over the air (ota)',
+          'heartrate',
+          'data throughput',
+          'peer to peer router',
+          'health thermometer'
+        ]);
+
+        const cleanText = (value) => value.replace(/\s+/g, ' ').trim();
+        const addSection = (title, id) => {
+          currentSection = { title, id, nodes: [] };
+          sections.push(currentSection);
+        };
+
+        for (const node of sourceNodes) {
+          const tag = node.tagName;
+
+          if (tag === 'H1') {
+            const heading = cleanText(node.textContent || '');
+            inUsersGuide = /^User'?s guide$/i.test(heading);
+
+            if (!inUsersGuide) {
+              addSection(heading, node.id || `section-${sections.length + 1}`);
+              currentSection.nodes.push(node);
+            } else {
+              currentSection = null;
+            }
+
+            continue;
+          }
+
+          if (inUsersGuide && tag === 'H2') {
+            const subHeading = cleanText(node.textContent || '');
+            addSection(subHeading, node.id || `section-${sections.length + 1}`);
+            currentSection.nodes.push(node);
+            continue;
+          }
+
+          if (!currentSection) {
+            addSection('Overview', `section-${sections.length + 1}`);
+          }
+
+          currentSection.nodes.push(node);
+        }
+
+        const groupedAppSections = [];
+        const displayedSections = [];
+        let appsTabAdded = false;
+
+        sections.forEach((section) => {
+          const normalizedTitle = cleanText(section.title || '').toLowerCase();
+
+          if (appSectionTitles.has(normalizedTitle)) {
+            groupedAppSections.push(section);
+
+            if (!appsTabAdded) {
+              displayedSections.push({
+                title: 'Applications',
+                id: 'applications',
+                groupedSections: groupedAppSections
+              });
+              appsTabAdded = true;
+            }
+
+            return;
+          }
+
+          displayedSections.push(section);
+        });
+
+        readmeBody.innerHTML = '';
+
+        const tabs = [];
+        const panels = [];
+
+        displayedSections.forEach((section, index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'readmeTab';
+          button.textContent = section.title;
+
+          const panel = document.createElement('section');
+          panel.className = 'readmePanel';
+          panel.id = `panel-${section.id || index + 1}`;
+
+          if (Array.isArray(section.groupedSections)) {
+            const subTabsHost = document.createElement('div');
+            subTabsHost.className = 'readmeSubTabs';
+
+            const subPanels = [];
+            const subTabs = [];
+
+            section.groupedSections.forEach((subSection, subIndex) => {
+              const subButton = document.createElement('button');
+              subButton.type = 'button';
+              subButton.className = 'readmeSubTab';
+              subButton.textContent = subSection.title;
+
+              const subPanel = document.createElement('article');
+              subPanel.className = 'readmeSubPanel';
+              subPanel.id = `subpanel-${subSection.id || subIndex + 1}`;
+
+              subSection.nodes.forEach((node) => subPanel.appendChild(node));
+
+              subTabsHost.appendChild(subButton);
+              panel.appendChild(subPanel);
+
+              subTabs.push(subButton);
+              subPanels.push(subPanel);
+            });
+
+            panel.prepend(subTabsHost);
+
+            const activateSubPanel = (subIndex) => {
+              subTabs.forEach((subTab, currentSubIndex) => {
+                subTab.classList.toggle('active', currentSubIndex === subIndex);
+              });
+
+              subPanels.forEach((subPanel, currentSubIndex) => {
+                subPanel.classList.toggle('active', currentSubIndex === subIndex);
+              });
+
+              readmeBody.scrollTop = 0;
+            };
+
+            subTabs.forEach((subTab, subIndex) => {
+              subTab.addEventListener('click', () => activateSubPanel(subIndex));
+            });
+
+            if (subTabs.length > 0) {
+              activateSubPanel(0);
+            }
+          } else {
+            section.nodes.forEach((node) => panel.appendChild(node));
+          }
+
+          tabsHost.appendChild(button);
+          readmeBody.appendChild(panel);
+
+          tabs.push(button);
+          panels.push(panel);
+        });
+
+        const activate = (index) => {
+          tabs.forEach((tab, tabIndex) => {
+            tab.classList.toggle('active', tabIndex === index);
+          });
+
+          panels.forEach((panel, panelIndex) => {
+            panel.classList.toggle('active', panelIndex === index);
+          });
+
+          readmeBody.scrollTop = 0;
+        };
+
+        tabs.forEach((tab, index) => {
+          tab.addEventListener('click', () => activate(index));
+        });
+
+        if (tabs.length > 0) {
+          activate(0);
+        }
+      }());
+    </script>
+
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

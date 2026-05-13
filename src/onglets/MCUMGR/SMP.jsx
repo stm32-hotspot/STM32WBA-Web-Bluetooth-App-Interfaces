@@ -13,12 +13,11 @@
 // * If no LICENSE file comes with this software, it is provided AS-IS.
 // *
 //  ******************************************************************************
-import { render } from '@testing-library/react';
 import React, { useState, useEffect } from 'react';
 // import * as CBOR from 'cbor';
 //import * as CBOR from 'cbor-web';
 // Inclure la bibliothèque CBOR
-const CBOR = require('./cbor');
+import CBOR from './cbor';
 
 
 // Opcodes

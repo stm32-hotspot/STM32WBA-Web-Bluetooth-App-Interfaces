@@ -1,0 +1,37 @@
+<!--
+******************************************************************************
+* @file    404.html
+* @author  MCD Application Team
+*
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2022-2023 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redirecting...</title>
+  </head>
+  <body>
+    <script>
+      // GitHub Pages fallback: route unknown paths back to app base.
+      (function () {
+        var path = window.location.pathname;
+        var marker = '/Web_Bluetooth_App_WBA/';
+        var idx = path.indexOf(marker);
+        var base = idx >= 0 ? path.slice(0, idx + marker.length) : '/';
+        window.location.replace(base);
+      })();
+    </script>
+  </body>
+</html>

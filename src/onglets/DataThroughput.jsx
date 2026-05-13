@@ -40,7 +40,7 @@ const DataThroughput = (props) => {
     let MaxBytesPerSecReceivedUpload = 0;
     let downloadNotifyCharacteristic;
     let uploadNotifyCharacteristic;
-    let writeCharacteristic;  
+    let writeCharacteristic;
 
     let downloadChartConfig = {
         type: "line",
@@ -60,7 +60,7 @@ const DataThroughput = (props) => {
                 duration: 0,
             },
             plugins: {
-                legend: { 
+                legend: {
                     display: false },
                 title: {
                     position: 'top',
@@ -93,7 +93,7 @@ const DataThroughput = (props) => {
                 duration: 0,
             },
             plugins: {
-                legend: { 
+                legend: {
                     display: false },
                 title: {
                     position: 'top',
@@ -107,7 +107,7 @@ const DataThroughput = (props) => {
             }
         }
     }
-    
+
     const downloadChartContainer = useRef(null);
     const [downloadChartInstance, setDownloadChartInstance] = useState(null);
 
@@ -115,8 +115,12 @@ const DataThroughput = (props) => {
         if (downloadChartContainer && downloadChartContainer.current) {
             const newDownloadChartInstance = new Chart(downloadChartContainer.current, downloadChartConfig);
             setDownloadChartInstance(newDownloadChartInstance);
+
+            return () => {
+                newDownloadChartInstance.destroy();
+            };
         }
-    }, [downloadChartContainer]);
+    }, []);
 
     const uploadChartContainer = useRef(null);
     const [uploadChartInstance, setUploadChartInstance] = useState(null);
@@ -125,40 +129,44 @@ const DataThroughput = (props) => {
         if (uploadChartContainer && uploadChartContainer.current) {
             const newUploadChartInstance = new Chart(uploadChartContainer.current, uploadChartConfig);
             setUploadChartInstance(newUploadChartInstance);
+
+            return () => {
+                newUploadChartInstance.destroy();
+            };
         }
-    }, [uploadChartContainer]);
+    }, []);
 
     let dataToUpload = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     // Filtering the different datathroughput characteristics
     props.allCharacteristics.map(element => {
-        
+
         switch (element.characteristic.uuid){
             /*
-            case "0000fe81-8e22-4541-9d4c-21edae82fe81" : 
+            case "0000fe81-8e22-4541-9d4c-21edae82fe81" :
                 downloadNotifyCharacteristic = element;
             break;
-            case "0000fe82-8e22-4541-9d4c-21edae82fe82" : 
+            case "0000fe82-8e22-4541-9d4c-21edae82fe82" :
                 writeCharacteristic = element;
             break;
-            case "0000fe83-8e22-4541-9d4c-21edae82fe83" : 
+            case "0000fe83-8e22-4541-9d4c-21edae82fe83" :
                 uploadNotifyCharacteristic = element;
             break;
             */
-            
-            case "0000fe81-8e22-4541-9d4c-21edae82ed19" : 
+
+            case "0000fe81-8e22-4541-9d4c-21edae82ed19" :
                 downloadNotifyCharacteristic = element;
             break;
-            case "0000fe82-8e22-4541-9d4c-21edae82ed19" : 
+            case "0000fe82-8e22-4541-9d4c-21edae82ed19" :
                 writeCharacteristic = element;
             break;
-            case "0000fe83-8e22-4541-9d4c-21edae82ed19" : 
+            case "0000fe83-8e22-4541-9d4c-21edae82ed19" :
                 uploadNotifyCharacteristic = element;
             break;
             default:
                 console.log("# No characteristics find..");
         }
     });
-    
+
     document.getElementById("readmeInfo").style.display = "none";
 
     async function uploadingData(){
@@ -171,7 +179,7 @@ const DataThroughput = (props) => {
             console.log('Argh! ' + error);
         }
     }
-        
+
     async function onUploadButtonClick() {
         if (document.getElementById('UploadButton').innerHTML === "START"){
             // 4ms : max 60000
@@ -183,7 +191,7 @@ const DataThroughput = (props) => {
             clearInterval(intervalIdUpload);
             document.getElementById('UploadButton').innerHTML = "START";
             createLogElement("", 0, "DT STOP UPLOAD");
-        }        
+        }
     }
 
     function eachSeconds() {
@@ -194,7 +202,7 @@ const DataThroughput = (props) => {
         document.getElementById('AveragebytesReceivedDownloadDownload').innerHTML = "Average : " + bytesReceivedDownload + " Bytes/sec";
         document.getElementById('MaxbytesReceivedDownloadDownload').innerHTML = "Max : " + MaxBytesPerSecReceivedDownload + " Bytes/sec";
         document.getElementById('PacketSizeDownload').innerHTML = "Packet size : " + CHUNK_LENGTH + " Bytes";
-        bytesReceivedDownload = 0;        
+        bytesReceivedDownload = 0;
     }
 
     // Download notify button click handler
@@ -257,11 +265,11 @@ const DataThroughput = (props) => {
     }
 
     function notifHandlerDownload(event) {
-        //console.log("Download Notification Received"); 
+        //console.log("Download Notification Received");
         var buf = new Uint8Array(event.target.value.buffer);
         //createLogElement(buf, 1, "DT DOWNLOAD NOTIFICATION RECEIVED");
         bytesReceivedDownload = bytesReceivedDownload + buf.byteLength;
-    }    
+    }
 
     // Receive a notification each seconds
     function notifHandlerUpload(event) {
@@ -284,8 +292,8 @@ const DataThroughput = (props) => {
         addDataToChart("upload", bytesReceivedUpload);
         document.getElementById('AveragebytesReceivedDownloadUpload').innerHTML = "Average : " + hexToDec + " Bytes/sec";
         document.getElementById('MaxbytesReceivedDownloadUpload').innerHTML = "Max : " + MaxBytesPerSecReceivedUpload + " Bytes/sec";
-        document.getElementById('PacketSizeUpload').innerHTML = "Packet size : " + CHUNK_LENGTH + " Bytes";    
-    }  
+        document.getElementById('PacketSizeUpload').innerHTML = "Packet size : " + CHUNK_LENGTH + " Bytes";
+    }
 
     function addDataToChart(transfertType, data) {
         // Get current time
@@ -309,7 +317,7 @@ const DataThroughput = (props) => {
             downloadChartInstance.data.datasets[0].data = downloadDataSet;
             downloadChartInstance.data.labels = downloadLabelTime;
             downloadChartInstance.update();
-        }      
+        }
         if (transfertType === "upload"){
             if (uploadDataSet.length >= GRAPH_MAX_LABELS) {
                 uploadDataSet.pop(); // Remove the last element
@@ -324,8 +332,8 @@ const DataThroughput = (props) => {
             uploadChartInstance.data.datasets[0].data = uploadDataSet;
             uploadChartInstance.data.labels = uploadLabelTime;
             uploadChartInstance.update();
-        }      
-    }      
+        }
+    }
 
     function onButtonResetClick(transfertType){
         let currentTime = new Date().toLocaleTimeString("en-US", {
@@ -363,10 +371,10 @@ const DataThroughput = (props) => {
           <strong>Info :</strong> Reset the data displayed on the chart.
         </Popover>
       );
-      
+
     const popoverDownload = (
         <Popover id="popover-trigger-hover-focus" title="Popover bottom">
-          <strong>Info :</strong> This chart display the download throughput. 
+          <strong>Info :</strong> This chart display the download throughput.
         </Popover>
       );
     const popoverUpload = (
@@ -387,8 +395,8 @@ const DataThroughput = (props) => {
                     </div>
                 </div>
                 {/* Upload Chart */}
-                <div class="card text-dark bg-light mb-3" id='uploadDiv' style={{"display": displayUploadDiv}}>
-                    <div class="card-header">Upload Chart
+                <div className="card text-dark bg-light mb-3" id='uploadDiv' style={{"display": displayUploadDiv}}>
+                    <div className="card-header">Upload Chart
                         <span>
                             <OverlayTrigger
                                 trigger={['hover', 'focus']}
@@ -398,9 +406,9 @@ const DataThroughput = (props) => {
                             </OverlayTrigger>
                         </span>
                     </div>
-                    <div class="card-body">
+                    <div className="card-body">
                         <div className='row mb-2'>
-                            <div class="col-6">
+                            <div className="col-6">
                                 <div className='input-group mx-auto bg-secondary'>
                                     <button className="secondaryButton me-1" type="button" onClick={onUploadButtonClick} id="UploadButton">START</button>
                                     <OverlayTrigger
@@ -411,7 +419,7 @@ const DataThroughput = (props) => {
                                     </OverlayTrigger>
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div className="col-6">
                                 <div className='input-group mx-auto custom-bg-danger'>
                                     <button className="dangerButton me-1" type="button" onClick={() => onButtonResetClick("upload")} id="UploadButtonReset">RESET</button>
                                     <OverlayTrigger
@@ -422,21 +430,21 @@ const DataThroughput = (props) => {
                                     </OverlayTrigger>
                                 </div>
                             </div>
-                        </div>                        
-                        <p class="card-text" id="AveragebytesReceivedDownloadUpload">Average :</p>
-                        <p class="card-text" id="MaxbytesReceivedDownloadUpload">Max :</p>
-                        <p class="card-text" id="PacketSizeUpload">Packet size :</p>
+                        </div>
+                        <p className="card-text" id="AveragebytesReceivedDownloadUpload">Average :</p>
+                        <p className="card-text" id="MaxbytesReceivedDownloadUpload">Max :</p>
+                        <p className="card-text" id="PacketSizeUpload">Packet size :</p>
                     </div>
-                    <div style={{height: "400px", width: "100%"}}>  
+                    <div style={{height: "400px", width: "100%"}}>
                         <canvas ref={uploadChartContainer}></canvas>
                     </div>
-                    <div class="card-footer">
-                        <small class="text-muted"></small>
+                    <div className="card-footer">
+                        <small className="text-muted"></small>
                     </div>
                 </div>
                 {/* Download Chart */}
-                <div class="card text-dark bg-light mb-3" id='downloadDiv' style={{"display": displayDownloadDiv}}>
-                    <div class="card-header">Download chart
+                <div className="card text-dark bg-light mb-3" id='downloadDiv' style={{"display": displayDownloadDiv}}>
+                    <div className="card-header">Download chart
                         <span>
                             <OverlayTrigger
                                 trigger={['hover', 'focus']}
@@ -446,9 +454,9 @@ const DataThroughput = (props) => {
                             </OverlayTrigger>
                         </span>
                     </div>
-                    <div class="card-body">
+                    <div className="card-body">
                     <div className='row mb-2'>
-                        <div class="col-6">
+                        <div className="col-6">
                             <div className='input-group mx-auto custom-bg-danger'>
                                 <button className="dangerButton me-1" type="button" onClick={() => onButtonResetClick("download")} id="DownloadButtonReset">RESET</button>
                                 <OverlayTrigger
@@ -459,18 +467,18 @@ const DataThroughput = (props) => {
                                 </OverlayTrigger>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div className="col-6">
                         </div>
-                    </div>    
-                        <p class="card-text" id="AveragebytesReceivedDownloadDownload">Average :</p>
-                        <p class="card-text" id="MaxbytesReceivedDownloadDownload">Max :</p>
-                        <p class="card-text" id="PacketSizeDownload">Packet size :</p>
                     </div>
-                    <div style={{height: "400px", width: "100%"}}>  
+                        <p className="card-text" id="AveragebytesReceivedDownloadDownload">Average :</p>
+                        <p className="card-text" id="MaxbytesReceivedDownloadDownload">Max :</p>
+                        <p className="card-text" id="PacketSizeDownload">Packet size :</p>
+                    </div>
+                    <div style={{height: "400px", width: "100%"}}>
                         <canvas ref={downloadChartContainer}></canvas>
                     </div>
-                    <div class="card-footer">
-                        <small class="text-muted"></small>
+                    <div className="card-footer">
+                        <small className="text-muted"></small>
                     </div>
                 </div>
             </div>

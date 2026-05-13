@@ -15,11 +15,12 @@
 //  ******************************************************************************
 
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import logoST from '../images/st-logo.svg';
 import nucleo from '../images/NUCLEO_board.png';
 import nucleoWBA6 from '../images/NUCLEO_board_WBA6.png';
+import nucleoWBA2 from '../images/NUCLEO_board_WBA2.png';
 import STM32WBA65I_DK1 from '../images/STM32WBA65I_DK1.png';
 import dk1 from '../images/DK1.png';
 import bluetooth from '../images/bluetoothLogo.png';
@@ -28,10 +29,14 @@ import p2pslogo from '../images/P2PSlogo.png';
 import ecglogo from '../images/ECG_logo.png';
 
 export let deviceId;
+const OTA_SERVICE_UUID = '0000fe20-cc7a-482a-984a-7f2ed5b3e58f';
+const CUBE_REPO_API_BASE = 'https://api.github.com/repos/STMicroelectronics/STM32CubeWBA';
+const CUBE_REPO_WEB_BASE = 'https://github.com/STMicroelectronics/STM32CubeWBA/tree';
 
 var myDevice;
 let showAllDevices = false;
 let imgSrc = null;
+let latestCubeTagCache = null;
 
 const Header = (props) => {
 
@@ -39,33 +44,168 @@ const Header = (props) => {
   const [deviceType, setDeviceType] = useState('nucleo');
   const [selectedApp, setSelectedApp] = useState('');
   const [characteristicFound, setCharacteristicFound] = useState(false);
+  const [isOtaServiceAvailable, setIsOtaServiceAvailable] = useState(false);
+  const [isDeviceConnected, setIsDeviceConnected] = useState(false);
   const navigate = useNavigate();
 
 
   const OptionalServices =  [
     '00001800-0000-1000-8000-00805f9b34fb',
-    '0000fe40-cc7a-482a-984a-7f2ed5b3e58f', 
+    '0000fe40-cc7a-482a-984a-7f2ed5b3e58f',
     '0000180d-0000-1000-8000-00805f9b34fb',
     '0000fe80-cc7a-482a-984a-7f2ed5b3e58f',
     '0000fe80-8e22-4541-9d4c-21edae82fe80',
-    '0000fe20-cc7a-482a-984a-7f2ed5b3e58f', 
-    '0000feb0-cc7a-482a-984a-7f2ed5b3e58f', 
+    '0000fe20-cc7a-482a-984a-7f2ed5b3e58f',
+    '0000feb0-cc7a-482a-984a-7f2ed5b3e58f',
     '00001809-0000-1000-8000-00805f9b34fb',
-    'd973f2e0-b19e-11e2-9e96-0800200c9a66', 
-    '0000fec0-cc7a-482a-984a-7f2ed5b3e58f', 
-    '0000ff9a-cc7a-482a-984a-7f2ed5b3e58f', 
-    '0000f11a-cc7a-482a-984a-7f2ed5b3e58f', 
+    'd973f2e0-b19e-11e2-9e96-0800200c9a66',
+    '0000fec0-cc7a-482a-984a-7f2ed5b3e58f',
+    '0000ff9a-cc7a-482a-984a-7f2ed5b3e58f',
+    '0000f11a-cc7a-482a-984a-7f2ed5b3e58f',
     '0000fe90-cc7a-482a-984a-7f2ed5b3e58f',
     '00001810-0000-1000-8000-00805f9b34fb',
     '0000181d-0000-1000-8000-00805f9b34fb',
     '00001814-0000-1000-8000-00805f9b34fb',
     '0000181f-0000-1000-8000-00805f9b34fb',
     '8d53dc1d-1db7-4cd3-868b-8a527460aa84',
-    '00001840-0000-1000-8000-00805f9b34fb', 
-    '0000ff1a-cc7a-482a-984a-7f2ed5b3e58f', 
-    '0000ab40-cc7a-482a-984a-7f2ed5b3e58f'
+    '00001840-0000-1000-8000-00805f9b34fb',
+    '0000ff1a-cc7a-482a-984a-7f2ed5b3e58f',
+    '0000ab40-cc7a-482a-984a-7f2ed5b3e58f',
+    '0000fe50-cc7a-482a-984a-7f2ed5b3e58f'
   ];// service uuid of [P2P service, Heart Rate service, DataThroughput, Ota, P2P Router, Health Thermomiter, Finger Print, Blood Pressure, Weight Scale, Running Speed and Cadence, Continuous Glucose Monitoring, SolarDemo]
 
+  // Device ID mapping table
+  const deviceIdMap = {
+    '0x04 92': '5',
+    '0x04 b0': '6',
+    '0x04 b2': '2'
+  };
+
+  // Rev ID mapping table
+  const revIdMap = {
+    '0x10 00': 'Rev A',
+    '0x10 01': 'Rev Z',
+    '0x20 00': 'Rev B'
+  };
+
+  // 3D table to map deviceId, hwPackageId to hwName
+  const hwTable = {
+    '5': {
+    '0x00': 'UFQFPN32',
+    '0x02': 'UFQFPN48',
+    '0x09': 'WLCSP41-SMPS',
+    '0x0a': 'UFQFPN48-SMPS',
+    '0x0b': 'UFBGA59',
+    },
+    '6': {
+    '0x03': 'UFQFPN48-USB',
+    '0x05': 'WLCSP88-USB',
+    '0x07': 'UFBGA121-USB',
+    '0x0a': 'UFQFPN48-SMPS',
+    '0x0b': 'UFQFPN48-SMPS-USB',
+    '0x0c': 'VFQFPN68-SMPS-USB',
+    '0x0d': 'WLCSP88-SMPS-USB',
+    '0x0f': 'UFBGA121-SMPS-USB'
+    },
+    '2': {
+    '0x01': 'UFQFPN32',
+    '0x02': 'UFQFPN48',
+    '0x03': 'WLCSP37',
+    '0x05': 'UFQFPN32-USB',
+    '0x06': 'UFQFPN48-USB',
+    '0x07': 'WLCSP37-USB',
+    '0x0a': 'UFQFPN48-SMPS',
+    '0x0d': 'WLCSP37-SMPS-USB',
+    '0x0e': 'UFQFPN48-SMPS-USB',
+    }
+  };
+
+  // AppFWID to app name and apprep mapping table
+  const appFwIdTable = {
+    '0x83': { app: 'Peer 2 Peer Server', apprep: 'BLE_p2pServer' },
+    '0x89': { app: 'Heart Rate', apprep: 'BLE_HeartRate' },
+    '0x8a': { app: 'Health Thermometer', apprep: 'BLE_HealthThermometer' },
+    '0x88': { app: 'Data Throughput', apprep: 'BLE_HealthThermometer' },
+    '0x85': { app: 'Peer 2 Peer Router', apprep: 'BLE_p2pRouter' },
+    '0x87': { app: 'Serial Com Peripheral', apprep: 'BLE_SerialCom_Peripheral' },
+    '0x8d': { app: 'Alert Notifiaction', apprep: 'BLE_AlertNotification' },
+    '0x90': { app: 'Find Me', apprep: 'BLE_FindMe' },
+    '0x8f': { app: 'Phone Alert Status', apprep: 'BLE_PhoneAlertStatus' },
+    '0x8e': { app: 'Proximity', apprep: 'BLE_Proximity' },
+    '0x8b': { app: 'Weight Scale', apprep: 'BLE_WeightScale' },
+    '0x8c': { app: 'Blood Pressure', apprep: 'BLE_BloodPressure' },
+    '0x9a': { app: 'Continuous Glucose Monitoring', apprep: 'BLE_ContinuousGlucoseMonitoring' },
+    '0x9b': { app: 'Running Speed and Cadence', apprep: 'BLE_RunningSpeedAndCadence' },
+    '0x9c': { app: 'BLE Sensor - HeartRate - P2PServer', apprep: 'BLE_Sensor_HR_P2PServer' },
+    '0x9d': { app: 'Electrocardiogram', apprep: 'BLE_GenericHealth_ECG' },
+    '0x9e': { app: 'Pulse Oximeter', apprep: 'BLE_GenericHealth_POX' },
+    '0xfc': { app: 'Peer 2 Peer Server Config Persistent Storage', apprep: 'BLE_p2pServer_Config_PerStorage' },
+  };
+
+  // App name prefixes to filter devices during Bluetooth device discovery
+  const appPrefixTable = [
+    "HT_",            // BLE_HealthThermometer
+    "HR_",            // BLE_HeartRate
+    "p2pS_",          // P2P : Server
+    "P2PS_",          // P2P : Server
+    "p2pR_",          // P2P : Router
+    "p2pSext_",       // P2P : Server Ext
+    "DT",             // BLE_DataThroughput
+    "FP",             // BLE_FingerPrint
+    "BLS_",           // BLE_BloodPressure
+    "WS_",            // BLE_WeightScale
+    "RSC_",           // BLE_RunningSpeedandCadence
+    "CGM_",           // BLE_ContinuousGlucoseMonitoring
+    "WBAx_WiFi",      // BLE_WifCommissionning
+    "ST",             // BLE_WifCommissionning
+    "FC",             // BLE_FanProject
+    "FOTA",           // Secure FOTA
+    "HUB_DYN",        // HUB Zigbee
+    "FC",             // BLE_FanProject
+    "WBA",            // other WBA projects
+    "ECG",            // BLE_Electrocardiogram
+    "PO",             // BLE_PulseOxymeter
+    "Solar",          // Solar Demo : Server
+    "PS"              // BLE_p2pServer_Config_PerStorage
+  ];
+
+  const bluetoothFilters = appPrefixTable.map((namePrefix) => ({ namePrefix }));
+
+  // Board ID mapping table
+  const boardIdTable = {
+    '0x8b': { board: 'Nucleo-WBA55CG', img: nucleo },
+    '0x8c': { board: 'STM32WBA55G-DK1', img: dk1 },
+    '0x8e': { board: 'Nucleo-WBA65RI', img: nucleoWBA6 },
+    '0x90': { board: 'Nucleo-WBA25CE', img: nucleoWBA2 },
+    '0x91': { board: 'B-WBA5M-WPAN', img: null },
+    '0x92': { board: 'STM32WBA65I-DK1', img: STM32WBA65I_DK1 },
+    '0x93': { board: 'B-WBA6M-WPAN', img: null },
+  };
+
+  // Host Stack Version mapping table
+  const hsvp2Table = {
+    '0x00': 'Full Stack',
+    '0x10': 'Basic Plus',
+    '0x20': 'Basic Features',
+    '0x40': 'Peripheral Only',
+    '0x80': 'LL Only',
+    '0xA0': 'LL Only Basic',
+    // Add more mappings if needed
+  };
+
+  const boardProjectFolderMap = {
+    'Nucleo-WBA55CG': 'NUCLEO-WBA55CG',
+    'Nucleo-WBA65RI': 'NUCLEO-WBA65RI',
+    'Nucleo-WBA25CE': 'NUCLEO-WBA25CE',
+    'STM32WBA55G-DK1': 'STM32WBA55G-DK1',
+    'STM32WBA65I-DK1': 'STM32WBA65I-DK1',
+    'B-WBA5M-WPAN': 'B-WBA5M-WPAN',
+    'B-WBA6M-WPAN': 'B-WBA6M-WPAN'
+  };
+
+  function setConnectionButtonsState(isConnected) {
+    setIsDeviceConnected(isConnected);
+  }
 
 
   function connection() {
@@ -73,57 +213,9 @@ const Header = (props) => {
     if (showAllDevices == false) {
       console.log("Bluetooth Device Filter is ON");
       myDevice = navigator.bluetooth.requestDevice({
-        filters:
-          [{
-            namePrefix: "HT_"            // BLE_HealthThermometer
-          }, {
-            namePrefix: "HR_"            // BLE_HeartRate
-          }, {
-            namePrefix: "p2pS_"           // P2P : Server 
-          }, {
-            namePrefix: "P2PS_"           // P2P : Server 
-          }, {
-            namePrefix: "p2pR_"           // P2P : Router
-          }, {
-            namePrefix: "p2pSext_"        // P2P : Server Ext
-          }, {
-            namePrefix: "DT"              // BLE_DataThroughput
-          }, {
-            namePrefix: "FP"              // BLE_FingerPrint
-          }, {
-            namePrefix: "BLS_"            // BLE_BloodPressure
-          }, {
-            namePrefix: "WS_"            // BLE_WeightScale
-          }, {
-            namePrefix: "RSC_"            // BLE_RunningSpeedandCadence
-          }, {
-            namePrefix: "CGM_"            // BLE_ContinuousGlucoseMonitoring
-          }, {
-            namePrefix: "WBAx_WiFi"       // BLE_WifCommissionning
-          }, {
-            namePrefix: "ST"            // BLE_WifCommissionning
-          }, {
-            namePrefix: "FC"              // BLE_FanProject
-          }, {
-            namePrefix: "FOTA"             // Secure FOTA 
-          }, {
-            namePrefix: "HUB_DYN"         // HUB Zigbee
-          }, {
-            namePrefix: "FC"              // BLE_FanProject
-          }, {
-            namePrefix: "WBA"              // other WBA projects
-          }, {
-            namePrefix: "ECG"              // BLE_Electrocardiogram
-          }, {
-            namePrefix : "GHS"             // BLE_GHS
-          }, {
-            namePrefix : "PO"             // BLE_PulseOxymeter
-          }, {
-            namePrefix: "Solar"           // Solar Demo : Server 
-          }
-        ],
+        filters: bluetoothFilters,
 
-        optionalServices: OptionalServices  
+        optionalServices: OptionalServices
 
       })
         .then(device => {
@@ -138,6 +230,7 @@ const Header = (props) => {
 
         .then(services => {
           console.log('HEADER - Getting Characteristics...');
+          readOTACharacteristic(services);
           let queue = Promise.resolve();
           services.forEach(service => {
             console.log(service);
@@ -163,13 +256,10 @@ const Header = (props) => {
                   console.log('HEADER - >> Characteristic: ' + characteristic.uuid + ' ' + getSupportedProperties(characteristic));
                   createLogElement(characteristic, 4, 'CHARACTERISTIC')
                 });
-                readOTACharacteristic(services);
                 readNewCharacteristic(characteristics);
               }));
           });
-          let buttonConnect = document.getElementById('connectButton');
-          buttonConnect.innerHTML = "Connected";
-          buttonConnect.disabled = true;
+          setConnectionButtonsState(true);
           props.setIsDisconnected(false);
           return queue;
         })
@@ -183,7 +273,7 @@ const Header = (props) => {
         acceptAllDevices: true,
         optionalServices:  OptionalServices
       })
-      
+
 
         .then(device => {
           myDevice = device;
@@ -196,6 +286,7 @@ const Header = (props) => {
         })
         .then(services => {
           console.log('HEADER - Getting Characteristics...');
+          readOTACharacteristic(services);
           let queue = Promise.resolve();
           services.forEach(service => {
             console.log(service);
@@ -223,9 +314,7 @@ const Header = (props) => {
                 });
               }));
           });
-          let buttonConnect = document.getElementById('connectButton');
-          buttonConnect.innerHTML = "Connected";
-          buttonConnect.disabled = true;
+          setConnectionButtonsState(true);
           props.setIsDisconnected(false);
           return queue;
         })
@@ -239,11 +328,13 @@ const Header = (props) => {
   //Start Characteristics And Upload Sections
 
   const readOTACharacteristic = (services) => {
-    const otaService = services.find(service => service.uuid === "0000fe20-cc7a-482a-984a-7f2ed5b3e58f");
+    const otaService = services.find(service => service.uuid === OTA_SERVICE_UUID);
     if (otaService) {
       console.log("OTA found:", otaService);
+      setIsOtaServiceAvailable(true);
     } else {
       console.log("OTA not found");
+      setIsOtaServiceAvailable(false);
     }
   };
 
@@ -290,256 +381,44 @@ const Header = (props) => {
     console.log("Host Stack Version : ", HSv);
 
     console.log("-------------------------------");
-    
+
     deviceId = "0xFF";
 
-    switch (DeviceID) {
-      case '0x04 92':
-        deviceId = '5'
-        break;
-
-      case '0x04 b0':
-        deviceId = '6'
-        break;
-      case '0x04 b2':
-        deviceId = 'X'
-        break;
+    if (deviceIdMap[DeviceID]) {
+      deviceId = deviceIdMap[DeviceID];
     }
 
-    switch (RevID) {
-      case '0x10 00':
-        rev = 'Rev A'
-        break;
-
-      case '0x10 01':
-        rev = 'Rev Z'
-        break;
-
-      case '0x20 00':
-        rev = 'Rev B'
-        break;
+    if (revIdMap[RevID]) {
+      rev = revIdMap[RevID];
     }
 
-    switch (BoardID) {
-      case '0x8b':
-        board = 'Nucleo-WBA55CG'
-        imgSrc = nucleo
-        updateDeviceType(board)
-        break;
-
-      case '0x8c':
-        board = 'STM32WBA55G-DK1'
-        imgSrc = dk1 
-        updateDeviceType(board)
-        break;
-
-      case '0x8d':
-        board = 'B-WBA5M-WPAN'
-        updateDeviceType(board)
-        break;
-
-      case '0x8e':
-          board = 'Nucleo-WBA65RI'
-          imgSrc = nucleoWBA6
-          updateDeviceType(board)
-          break;
-
-      case '0x8f':
-        board = 'STM32WBA65I-DK1'
-        imgSrc = STM32WBA65I_DK1
-        updateDeviceType(board)
-        break;
-      
-      case '0x90':
-        board = 'Nucleo-WBAXXXX'
-        updateDeviceType(board)
-        break;
-        
+    if (boardIdTable[BoardID]) {
+      board = boardIdTable[BoardID].board;
+      imgSrc = boardIdTable[BoardID].img;
+      updateDeviceType(board);
     }
 
     setGithubBaseUrl(board);
 
-
-    switch (HWp) {
-      case '0x00':
-        hw = 'UFQFPN32'
-        break;
-
-      case '0x02':
-        hw = 'UFQFPN48'
-        break;
-
-      case '0x03':
-        hw = 'UFQFPN48-USB'
-        break;
-
-      case '0x05':
-        hw = 'WLCSP88-USB'
-        break;
-
-      case '0x07':
-        hw = 'UFBGA121-USB'
-        break;
-
-      case '0x09':
-        hw = 'WLCSP41-SMPS'
-        break;
-
-      case '0x0a':
-        hw = 'UFQFPN48-SMPS'
-        break;
-
-      case '0x0b':
-        if(deviceId == '5')
-        {          
-          hw = 'UFBGA59-SMPS'
-        }
-        else if(deviceId = '6')
-        {
-          hw = 'UFQFPN48-SMPS-USB'
-        }
-        break;
-
-      case '0x0c':
-        hw = 'VFQFPN68'
-        break;
-
-      case '0x0d':
-        hw = 'WLCSP88-SMPS-USB'
-        break;
-
-      case '0x0f':
-        hw = 'UFBGA121-SMPS-USB'
-        break;
-
-    }
-
+    hw = (hwTable[deviceId] && hwTable[deviceId][HWp]) || '';
 
     hsvp1 = 'Tag 0.'+ hexToDecimal(HSvp2);
 
-    switch (HSvp1) {
-      case '0x00':
-        hsvp2 = 'Full Stack'
-        break;
-
-      case '0x10':
-        hsvp2 = 'Basic Plus'
-        break;
-
-      case '0x20':
-        hsvp2 = 'Basic Features'
-        break;
-
-      case '0x40':
-        hsvp2 = 'Peripheral Only'
-        break;
-
-      case '0x80':
-        hsvp2 = 'LL Only'
-        break;
-
-      case '0xA0':
-        hsvp2 = 'LL Only Basic'
-        break;
-
-      case '0xxn':
-        hsvp2 = 'branch n'
-        break;
-
-      case '0xxf':
-        hsvp2 = 'debug version'
-        break;
-
+    if (hsvp2Table[HSvp1]) {
+      hsvp2 = hsvp2Table[HSvp1];
+    } else if (/^0x[0-9a-f]n$/i.test(HSvp1)) {
+      hsvp2 = 'branch n';
+    } else if (/^0x[0-9a-f]f$/i.test(HSvp1)) {
+      hsvp2 = 'debug version';
+    } else {
+      hsvp2 = '';
     }
 
     hsv = hsvp1 + " " + hsvp2
 
-    switch (AppFWID) {
-      case '0x83':
-        app = 'Peer 2 Peer Server'
-        apprep = 'BLE_p2pServer'
-        break;
-
-      case '0x89':
-        app = 'Heart Rate'
-        apprep = 'BLE_HeartRate'
-        break;
-
-      case '0x8a':
-        app = 'Health Thermometer'
-        apprep = 'BLE_HealthThermometer'
-        break;
-
-      case '0x88':
-        app = 'Data Throughput'
-        apprep = 'BLE_HealthThermometer'
-        break;
-
-      case '0x85':
-        app = 'Peer 2 Peer Router'
-        apprep = 'BLE_p2pRouter'
-        break;
-
-      case '0x87':
-        app = 'Serial Com Peripheral'
-        apprep = 'BLE_SerialCom_Peripheral'
-        break;
-
-      case '0x8d':
-        app = 'Alert Notifiaction'
-        apprep = 'BLE_AlertNotification'
-        break;
-
-      case '0x90':
-        app = 'Find Me'
-        apprep = 'BLE_FindMe'
-        break;
-
-      case '0x8f':
-        app = 'Phone Alert Status'
-        apprep = 'BLE_PhoneAlertStatus'
-        break;
-
-      case '0x8e':
-        app = 'Proximity'
-        apprep = 'BLE_Proximity'
-        break;
-
-      case '0x8b':
-        app = 'Weight Scale'
-        apprep = 'BLE_WeightScale'
-        break;
-
-      case '0x8c':
-        app = 'Blood Pressure'
-        apprep = 'BLE_BloodPressure'
-        break;
-
-      case '0x9a':
-        app = 'Continuous Glucose Monitoring'
-        apprep = 'BLE_ContinuousGlucoseMonitoring'
-        break;
-
-      case '0x9b':
-        app = 'Running Speed and Cadence'
-        apprep = 'BLE_RunningSpeedAndCadence'
-        break;
-
-      case '0x9c':
-        app = 'BLE Sensor - HeartRate - P2PServer'
-        apprep = 'BLE_Sensor_HR_P2PServer'
-        break;
-      
-      case '0x9d':
-        app= 'Electrocardiogram'
-        apprep = 'BLE_GenericHealth_ECG'
-        break;
-
-      case '0x9e':
-        app= 'Pulse Oximeter'
-        apprep = 'BLE_GenericHealth_POX'
-        break;
-
+    if (appFwIdTable[AppFWID]) {
+      app = appFwIdTable[AppFWID].app;
+      apprep = appFwIdTable[AppFWID].apprep;
     }
 
     appv = "v" + parseInt(statusWord.substring(18, 20), 16) + "." + parseInt(statusWord.substring(21, 23), 16) + "." + parseInt(statusWord.substring(24, 26), 16) + "." + parseInt(statusWord.substring(27, 29), 16) + "." + parseInt(statusWord.substring(30, 32), 16);
@@ -572,71 +451,148 @@ const Header = (props) => {
     var appvs = document.getElementById("appvs");
     appvs.innerText = "App FW Version : " + appv;
 
-    let apprepOta = `${apprep}${"_ota"}`;
-    const latestVersion = await getLatestVersion(apprepOta);
+    const cubeUpdateInfo = await checkCubeProjectUpdate(board, apprep, appv);
 
     const versionRecentRow = document.getElementById('versionrecent');
     const versionUpdateRow = document.getElementById('versionupdate');
+    const updateTag = document.getElementById('latestCubeTag');
+    const updateLink = document.getElementById('cubeProjectLink');
 
-    if (isLatestVersion(appv, latestVersion)) {
-      versionRecentRow.style.display = '';
+    if (updateTag) {
+      updateTag.innerText = cubeUpdateInfo.latestTag || '';
+    }
+
+    if (updateLink) {
+      if (cubeUpdateInfo.projectUrl) {
+        updateLink.href = cubeUpdateInfo.projectUrl;
+        updateLink.style.display = '';
+      } else {
+        updateLink.removeAttribute('href');
+        updateLink.style.display = 'none';
+      }
+    }
+
+    if (!cubeUpdateInfo.projectUrl) {
+      versionRecentRow.style.display = 'none';
       versionUpdateRow.style.display = 'none';
-    } else {
+    } else if (cubeUpdateInfo.hasUpdate) {
       versionRecentRow.style.display = 'none';
       versionUpdateRow.style.display = '';
+    } else {
+      versionRecentRow.style.display = '';
+      versionUpdateRow.style.display = 'none';
     }
 
   }
 
-  async function getLatestVersion(appFolderName) {
-    const url = `${githubBaseUrl}${appFolderName}`;
+  async function getLatestCubeTag() {
+    if (latestCubeTagCache) {
+      return latestCubeTagCache;
+    }
+
+    const url = `${CUBE_REPO_API_BASE}/tags?per_page=100`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`GitHub API responded with status code ${response.status}`);
       }
-      const files = await response.json();
-      const versionRegex = /(v\d+\.\d+\.\d+)\.bin/;
+      const tags = await response.json();
+      const semverRegex = /^v\d+\.\d+\.\d+$/;
 
-      let versions = files
-        .map(file => {
-          const match = file.name.match(versionRegex);
-          return match ? match[1] : null;
-        })
-        .filter(version => version !== null)
-        .map(version => formatVersion(version))
-        .sort((a, b) => b.localeCompare(a));
-      console.log("Latest Version: ", versions[0]);
+      const versions = tags
+        .map(tag => tag.name)
+        .filter(tagName => semverRegex.test(tagName))
+        .sort(compareVersionStringsDesc);
 
-      return versions[0];
+      latestCubeTagCache = versions[0] || null;
+      console.log('Latest STM32CubeWBA tag:', latestCubeTagCache);
+      return latestCubeTagCache;
     } catch (error) {
-      console.error('Error fetching the latest version:', error);
+      console.error('Error fetching STM32CubeWBA tags:', error);
+      return null;
     }
   }
 
-
-  function formatVersion(version) {
-    const versionRegex = /(v\d+\.\d+\.\d+)/;
-    const match = version.match(versionRegex);
-    if (match && match[1]) {
-      return match[1] + '.0.0';
+  function normalizeVersion(version) {
+    if (!version) {
+      return [0, 0, 0];
     }
-    return null;
+
+    const cleaned = version.replace(/^v/i, '');
+    const parts = cleaned.split('.').map(part => parseInt(part, 10));
+    return [
+      Number.isFinite(parts[0]) ? parts[0] : 0,
+      Number.isFinite(parts[1]) ? parts[1] : 0,
+      Number.isFinite(parts[2]) ? parts[2] : 0
+    ];
   }
 
+  function compareVersionStringsDesc(versionA, versionB) {
+    const a = normalizeVersion(versionA);
+    const b = normalizeVersion(versionB);
 
-  function isLatestVersion(current, latest) {
-    const currentParts = current.split('.').map(Number);
-    const latestParts = latest.split('.').map(Number);
-
-    for (let i = 0; i < currentParts.length; i++) {
-      if (currentParts[i] < latestParts[i]) {
-        return false;
-      } else if (currentParts[i] > latestParts[i]) {
-        return true;
+    for (let i = 0; i < 3; i++) {
+      if (a[i] !== b[i]) {
+        return b[i] - a[i];
       }
     }
-    return true;
+    return 0;
+  }
+
+  function compareFirmwareToTag(firmwareVersion, cubeTag) {
+    const firmwareParts = normalizeVersion(firmwareVersion);
+    const tagParts = normalizeVersion(cubeTag);
+
+    for (let i = 0; i < 3; i++) {
+      if (firmwareParts[i] < tagParts[i]) {
+        return -1;
+      }
+      if (firmwareParts[i] > tagParts[i]) {
+        return 1;
+      }
+    }
+    return 0;
+  }
+
+  async function doesProjectExistInTag(board, apprep, tagName) {
+    const boardFolder = boardProjectFolderMap[board];
+    if (!boardFolder || !apprep || !tagName) {
+      return null;
+    }
+
+    const projectApiPath = `Projects/${boardFolder}/Applications/BLE/${apprep}`;
+    const url = `${CUBE_REPO_API_BASE}/contents/${projectApiPath}?ref=${encodeURIComponent(tagName)}`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        return null;
+      }
+      return `${CUBE_REPO_WEB_BASE}/${encodeURIComponent(tagName)}/${projectApiPath}`;
+    } catch (error) {
+      console.error('Error checking project existence in STM32CubeWBA:', error);
+      return null;
+    }
+  }
+
+  async function checkCubeProjectUpdate(board, apprep, firmwareVersion) {
+    const latestTag = await getLatestCubeTag();
+    if (!latestTag) {
+      return {
+        hasUpdate: false,
+        latestTag: null,
+        projectUrl: null
+      };
+    }
+
+    const projectUrl = await doesProjectExistInTag(board, apprep, latestTag);
+    const hasUpdate = Boolean(projectUrl) && compareFirmwareToTag(firmwareVersion, latestTag) < 0;
+
+    return {
+      hasUpdate,
+      latestTag,
+      projectUrl
+    };
   }
 
 
@@ -657,7 +613,7 @@ const Header = (props) => {
       const fileName = githubRawUrl.split('/').pop();
 
       alert('GitHub URL set for OTA: ' + fileName);
-      
+
       navigate('/OTA', { replace: true });
        const element = document.getElementById('ota-section');
        if (element) {
@@ -683,8 +639,8 @@ const Header = (props) => {
    function setGithubBaseUrl(board) {
     if (board === 'Nucleo-WBA65RI') {
       githubBaseUrl = 'https://api.github.com/repos/AppliBLE/STM32WBA_Binaries/contents/STM32WBA6_Binaries/';
-    } else if (board === 'Nucleo-WBAXXXX'){
-      githubBaseUrl = 'https://api.github.com/repos/AppliBLE/STM32WBA_Binaries/contents/STM32WBAX_Binaries/';
+    } else if (board === 'Nucleo-WBA25CE'){
+      githubBaseUrl = 'https://api.github.com/repos/AppliBLE/STM32WBA_Binaries/contents/STM32WBA2_Binaries/';
     } else{
       githubBaseUrl = 'https://api.github.com/repos/AppliBLE/STM32WBA_Binaries/contents/STM32WBA5_Binaries/';
     }
@@ -706,7 +662,7 @@ const Header = (props) => {
         throw new Error(`GitHub API responded with status code ${response.status}`);
       }
       const files = await response.json();
-      
+
       versionRegex = /v(\d+\.\d+\.\d+)\.bin/;
       const versions = files
         .map(file => {
@@ -756,18 +712,20 @@ const Header = (props) => {
   function disconnection() {
     console.log('HEADER - Disconnecting from Bluetooth Device...');
     myDevice.gatt.disconnect();
-    document.getElementById('connectButton').disabled = false;
+    setConnectionButtonsState(false);
     props.setIsDisconnected(true);
     props.setAllServices([]);
-    document.location.href = "/Web_Bluetooth_App_WBA";
+    setIsOtaServiceAvailable(false);
+    window.location.assign(import.meta.env.BASE_URL);
   }
 
   function onDisconnected() {
     console.log('HEADER - > Bluetooth Device disconnected');
-    document.getElementById('connectButton').disabled = false;
+    setConnectionButtonsState(false);
     props.setIsDisconnected(true);
     props.setAllServices([]);
-    document.location.href = "/Web_Bluetooth_App_WBA/";
+    setIsOtaServiceAvailable(false);
+    window.location.assign(import.meta.env.BASE_URL);
   }
 
   function hexToDecimal(hex) {
@@ -794,14 +752,14 @@ const Header = (props) => {
       fileName: 'BLE_p2pServer_ota',
       logo: p2pslogo,
       link: 'https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32WBA_Peer_To_Peer',
-      deviceTypes: [ 'Nucleo-WBA55CG', 'Nucleo-WBA65RI', 'Nucleo-WBAXXXX']
+      deviceTypes: [ 'Nucleo-WBA55CG', 'Nucleo-WBA65RI', 'Nucleo-WBA25CE']
     },
     {
       id: 'app1',
       name: 'Electrocardiogram',
       fileName: 'BLE_GenericHealth_ECG_ota',
       logo: ecglogo,
-      link: '',
+      link: 'https://github.com/STMicroelectronics/STM32CubeWBA/tree/main/Projects/NUCLEO-WBA65RI/Applications/BLE/BLE_GenericHealth_ECG_ota',
       deviceTypes: ['Nucleo-WBA65RI']
     },
     {
@@ -810,7 +768,7 @@ const Header = (props) => {
       fileName: 'BLE_HeartRate_ota',
       logo: hrlogo,
       link: 'https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32WBA_HeartRate',
-      deviceTypes: ['Nucleo-WBA55CG', 'Nucleo-WBA65RI', 'Nucleo-WBAXXXX']
+      deviceTypes: ['Nucleo-WBA55CG', 'Nucleo-WBA65RI', 'Nucleo-WBA25CE']
     }
   ];
 
@@ -828,30 +786,30 @@ const Header = (props) => {
         </div>
         <div className="row mt-3">
           <div className="d-grid col-xs-12 col-sm-4 col-md-4 col-lg-4 p-2">
-            <button className="defaultButton" type="button" onClick={connection} id="connectButton">Connect</button>
+            <button className="defaultButton" type="button" onClick={connection} id="connectButton" disabled={isDeviceConnected}>{isDeviceConnected ? 'Connected' : 'Connect'}</button>
           </div>
           <div className="d-grid col-xs-12 col-sm-4 col-md-4 col-lg-4 p-2">
-            <button className="defaultButton" type="button" onClick={disconnection}>Disconnect</button>
+            <button className="defaultButton" type="button" onClick={disconnection} id="disconnectButton" disabled={!isDeviceConnected}>{isDeviceConnected ? 'Disconnect' : 'Disconnected'}</button>
           </div>
           <div className="d-grid col-xs-12 col-sm-4 col-md-4 col-lg-4 p-2">
-            <button class="defaultButton" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLogPanel" aria-controls="offcanvasLogPanel">
+            <button className="defaultButton" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLogPanel" aria-controls="offcanvasLogPanel">
               Info
             </button>
           </div>
-          <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasLogPanel" aria-labelledby="offcanvasLogPanelLabel">
-            <div class="offcanvas-header">
-              <h5 class="offcanvas-title" id="offcanvasLogPanelLabel">Application log panel</h5>
-              <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          <div className="offcanvas offcanvas-start" data-bs-scroll="true" tabIndex="-1" id="offcanvasLogPanel" aria-labelledby="offcanvasLogPanelLabel">
+            <div className="offcanvas-header">
+              <h5 className="offcanvas-title" id="offcanvasLogPanelLabel">Application log panel</h5>
+              <button type="button" className="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
-            <div class="offcanvas-body">
+            <div className="offcanvas-body">
               <div id="logPanel"></div>
             </div>
           </div>
           <div className="input-group mb-3">
             <label> Disable STM32 WBA Devices Filter &nbsp;</label>
-            <label class="containerCheckBox" onClick={checkBoxDeviceFilter}>
+            <label className="containerCheckBox" onClick={checkBoxDeviceFilter}>
               <input type="checkbox" id="checkboxFilter" />
-              <span class="checkmark"></span>
+              <span className="checkmark"></span>
             </label>
           </div>
         </div>
@@ -866,10 +824,10 @@ const Header = (props) => {
               </div>
 
 
-              <div class="Char__container container grid">
+              <div className="Char__container container grid">
 
-                <div class="Chartitle__card2">
-                  <div class="Char__container2 container grid">
+                <div className="Chartitle__card2">
+                  <div className="Char__container2 container grid">
                     <div>
                       <img src={imgSrc} alt="" className="boardImage"></img>
                     </div>
@@ -877,7 +835,7 @@ const Header = (props) => {
                     <div>
                       <br></br>
                       <h1><span id='dev' ></span></h1>
-                      <div class="custom-divider"></div>
+                      <div className="custom-divider"></div>
                       <h3><span id='revs' > </span></h3>
                       <h3><span id='hwp' > </span></h3>
                       <br></br>
@@ -887,21 +845,26 @@ const Header = (props) => {
 
                 <div>
 
-                  <div class="Chartitle__card3">
-                    <div class="header-content">
+                  <div className="Chartitle__card3">
+                    <div className="header-content">
                       <img src={bluetooth} alt="" className="bluetoothLogo">
                       </img><h1><span id='apps' > </span></h1>
                     </div>
                     <h3><span id='appvs' > </span></h3>
                     <div id="versionrecent" style={{ display: 'none' }}>
-                      <h4><box-icon name='info-circle' size='xs' type='solid' color='#03234B' class='infoLogo'></box-icon> This is the latest version of the application.</h4>
+                      <h4><box-icon name='info-circle' size='xs' type='solid' color='#03234B' className='infoLogo'></box-icon> This is the latest version of the application.</h4>
                     </div>
                     <div id="versionupdate" style={{ display: 'none' }}>
-                      <h4><box-icon name='info-circle' size='xs' type='solid' color='#03234B' class='infoLogo'></box-icon> A new version of the application is available.</h4>
+                      <h4>
+                        <box-icon name='info-circle' size='xs' type='solid' color='#03234B' className='infoLogo'></box-icon>
+                        <a id='cubeProjectLink' className='app-list-link' target='_blank' rel='noopener noreferrer'>
+                          A new STM32CubeWBA version is available: <span id='latestCubeTag'></span>.
+                        </a>
+                      </h4>
                     </div>
                   </div>
 
-                  <div class="Chartitle__card4">
+                  <div className="Chartitle__card4">
                     <h3><span id='hsvs1' > </span></h3>
                     <h3><span id='hsvs2' > </span></h3>
                   </div>
@@ -911,15 +874,15 @@ const Header = (props) => {
 
             </div>
           </div>
-          <div className="sidebar">
-            <div class="Chartitle__card5">
+          {isOtaServiceAvailable && <div className="sidebar">
+            <div className="Chartitle__card5">
 
               <h1>Upload via OTA</h1>
 
-              <div class="custom-divider"></div>
+              <div className="custom-divider"></div>
               <h1>Select The Available Application</h1>
 
-              <div class="app-list-container">
+              <div className="app-list-container">
               {applications.map((app) => (
                 <label
                   key={app.id}
@@ -954,14 +917,14 @@ const Header = (props) => {
                 </label>
                 ))}
               </div>
-      
 
 
-              <div class="custom-divider"></div>
+
+              <div className="custom-divider"></div>
 
               <h1>Select The Available Version</h1>
 
-              <div class="Chartitle__card6">
+              <div className="Chartitle__card6">
                 <select id="selectedVersion">
                   <option disabled selected>Choose app first</option>
                 </select>
@@ -973,7 +936,7 @@ const Header = (props) => {
                   <button onClick={handleDownloadClick}>Set OTA App</button>
               </div>
             </div>
-          </div>
+          </div>}
         </div>
 
       )}
@@ -1001,7 +964,7 @@ function checkBoxDeviceFilter() {
 
 // Create a new element in the log panel
 export function createLogElement(logText, maxLevel, description) {
-  // Format and beautify (like JSON) the object (interface) content give in parameter 
+  // Format and beautify (like JSON) the object (interface) content give in parameter
   // maxLevel set the number of recursivity loops, because interfaces have references to themselves and are infinite
   function formatInterface(object, maxLevel, currentLevel) {
     var str = '';

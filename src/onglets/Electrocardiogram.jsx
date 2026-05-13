@@ -34,7 +34,7 @@ const ECG = (props) => {
 
   let ECGDataSet = [];
   let ECGTime = [];
-  
+
   const chartContainer = useRef(null);
   const [chartInstance, setChartInstance] = useState(null);
 
@@ -56,8 +56,8 @@ const ECG = (props) => {
           duration: 0,
         },
         plugins: {
-          legend: { 
-            display: false 
+          legend: {
+            display: false
           },
           title: {
             position: 'top',
@@ -77,8 +77,12 @@ const ECG = (props) => {
     if (chartContainer && chartContainer.current) {
       const newChartInstance = new Chart(chartContainer.current, createChartConfig([]));
       setChartInstance(newChartInstance);
+
+      return () => {
+        newChartInstance.destroy();
+      };
     }
-  }, [chartContainer]);
+  }, []);
 
   const updateChart = (data) => {
     if (chartInstance) {
@@ -113,35 +117,35 @@ const ECG = (props) => {
   props.allCharacteristics.map(element => {
     switch (element.characteristic.uuid) {
       case "00002bf3-0000-1000-8000-00805f9b34fb":
-        HSF_Characteristic_Read_Indicate = element; 
+        HSF_Characteristic_Read_Indicate = element;
         HSF_Characteristic_Read_Indicate.characteristic.startNotifications();
         break;
       case "00002b8b-0000-1000-8000-00805f9b34fb":
-        LHO_Characteristic_Notify_Indicate = element; 
+        LHO_Characteristic_Notify_Indicate = element;
         LHO_Characteristic_Notify_Indicate.characteristic.startNotifications();
         break;
       case "00002bdd-0000-1000-8000-00805f9b34fb":
-        SHO_Characteristic_Notify_Indicate = element; 
+        SHO_Characteristic_Notify_Indicate = element;
         SHO_Characteristic_Notify_Indicate.characteristic.startNotifications();
         break;
       case "00002a52-0000-1000-8000-00805f9b34fb":
-        RACP_Characteristic_Write_Indicate = element; 
+        RACP_Characteristic_Write_Indicate = element;
         RACP_Characteristic_Write_Indicate.characteristic.startNotifications();
         break;
       case "00002bf4-0000-1000-8000-00805f9b34fb":
-        GHSP_Characteristic_Write_Indicate = element; 
+        GHSP_Characteristic_Write_Indicate = element;
         GHSP_Characteristic_Write_Indicate.characteristic.startNotifications();
         break;
       case "00002bf1-0000-1000-8000-00805f9b34fb":
-        OSC_Characteristic_Indicate = element; 
+        OSC_Characteristic_Indicate = element;
         OSC_Characteristic_Indicate.characteristic.startNotifications();
         break;
-      
+
       default:
         console.log("# No characteristics found..");
     }
   });
-  
+
   document.getElementById("readmeInfo").style.display = "none";
 
    // // write button handler
@@ -158,26 +162,26 @@ const ECG = (props) => {
         }
 
         // document.getElementById('writeButton').innerHTML = "Measuring"
-        
+
         console.log('Start ECG');
 
         // LHO_Characteristic_Notify_Indicate.characteristic.startNotifications();
         LHO_Characteristic_Notify_Indicate.characteristic.oncharacteristicvaluechanged = HCG_Handler;
     }
-    
-    var sample = new Uint8Array(0); 
-  
+
+    var sample = new Uint8Array(0);
+
     function HCG_Handler(event) {
         console.log("Notification Received");
         var buf = new Uint8Array(event.target.value.buffer);
         // console.log(buf);
-        
+
         if((buf[0] & 1) === 1){
           console.log('First segment');
           //buf[1] : Observation Class Type
           //buf[2&3] : Length
           //buf[4&5] : Flags
-          //buf[6-9] : Observation Type 
+          //buf[6-9] : Observation Type
           //buf[10] : Time Stamp
           //buf[11-18] : Time stamp param
           //buf[19&20] : Observation Value
@@ -188,9 +192,9 @@ const ECG = (props) => {
           //buf[34] : Bytes Per Sample
           //buf[35] : Number Of Samples
           //buf[36-...] : sample
-          
+
           sample = buf.subarray(36);
-          
+
         }else{
           let newSample = new Uint8Array(sample.length + buf.length - 1);
           console.log(buf);
@@ -199,12 +203,12 @@ const ECG = (props) => {
           sample = newSample;
           console.log(sample);
         }
-        
+
         // End of packet
         if((buf[0] >> 1 & 1) === 1){
           console.log(sample);
           const sample_16 = new Uint16Array(sample.length / 2);
-          
+
           for (let i = 0; i < sample_16.length; i++) {
             sample_16[i] = (sample[i * 2] | (sample[i * 2 + 1] << 8));
           }
@@ -223,11 +227,11 @@ const ECG = (props) => {
                 </div>
             </div>
             <div class="card text-dark bg-light mb-3">
-                            
-                <div style={{height: "400px", width: "100%"}}>  
+
+                <div style={{height: "400px", width: "100%"}}>
                     <canvas ref={chartContainer}></canvas>
                 </div>
-                
+
                 <div class="card-footer">
                     <small class="text-muted"></small>
                 </div>

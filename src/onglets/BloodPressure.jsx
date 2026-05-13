@@ -31,7 +31,7 @@ const BloodPressure = (props) => {
   let NotifyCharacteristic;
   let ReadCharacteristic
 
-  
+
   let min;
   let max;
   let map;
@@ -41,7 +41,7 @@ const BloodPressure = (props) => {
   props.allCharacteristics.map(element => {
     switch (element.characteristic.uuid) {
       case "00002a35-0000-1000-8000-00805f9b34fb":
-        IndicateCharacteristic = element; // Blood Pressure Measurement 
+        IndicateCharacteristic = element; // Blood Pressure Measurement
         IndicateCharacteristic.characteristic.startNotifications();
         IndicateCharacteristic.characteristic.oncharacteristicvaluechanged = BloodPressureMeasurement;
 
@@ -53,20 +53,20 @@ const BloodPressure = (props) => {
       case "00002a36-0000-1000-8000-00805f9b34fb":
         NotifyCharacteristic = element; //Intermediate Cuff Pressure
         NotifyCharacteristic.characteristic.startNotifications();
-        NotifyCharacteristic.characteristic.oncharacteristicvaluechanged = element;
-              break; 
+        NotifyCharacteristic.characteristic.oncharacteristicvaluechanged = IntermediateCuffPressureMeasurement;
+              break;
 
       default:
         console.log("# No characteristics found..");
     }
   });
-  
+
   document.getElementById("readmeInfo").style.display = "none";
 
 
 
 
-  function buf2hex(buffer) { 
+  function buf2hex(buffer) {
     return [...new Uint8Array(buffer)]
         .map(x => x.toString(16).padStart(2, '0'))
         .join('');
@@ -80,34 +80,48 @@ const BloodPressure = (props) => {
     var buf = new Uint8Array(event.target.value.buffer);
     const dataView = event.target.value;
     console.log(buf);
-    let bufHex = buf2hex(buf); 
+    let bufHex = buf2hex(buf);
     console.log(bufHex);
-  
-    let min = buf[1];    // MIN
-    let max = buf[3];    // MAX
-    let map = buf[5];    // MAP
-    let pulse = buf[14]; // Pulse
-  
+
     let measurementStatus;
     let bodyMovementDetected, cuffFitDetected, irregularPulseDetected, pulseRateWithinRange, measurementPositionDetected;
-  
-    let offset = 1; 
-  
 
     const flags = dataView.getUint8(0);
-  
+
+    let offset = 1;
+    let min = dataView.getUint16(offset, true);
+    offset += 2;
+    let max = dataView.getUint16(offset, true);
+    offset += 2;
+    let map = dataView.getUint16(offset, true);
+    offset += 2;
+
+    if (flags & (1 << 1)) {
+      offset += 7;
+    }
+
+    let pulse;
+    if (flags & (1 << 2)) {
+      pulse = dataView.getUint16(offset, true);
+      offset += 2;
+    }
+
     if (flags & (1 << 3)) {
+      offset += 1;
+    }
+
+    if (flags & (1 << 4)) {
       measurementStatus = dataView.getUint16(offset, true);
       offset += 2;
-  
 
       bodyMovementDetected = (measurementStatus & (1 << 0)) !== 0;
       cuffFitDetected = (measurementStatus & (1 << 1)) !== 0;
       irregularPulseDetected = (measurementStatus & (1 << 2)) !== 0;
-      pulseRateWithinRange = (measurementStatus & (1 << 3)) !== 0;
-      measurementPositionDetected = (measurementStatus & (1 << 4)) !== 0;
+      // Pulse is in range only when neither "above range" (bit 3) nor "below range" (bit 4) is set.
+      pulseRateWithinRange = (measurementStatus & ((1 << 3) | (1 << 4))) === 0;
+      measurementPositionDetected = (measurementStatus & (1 << 5)) !== 0;
     }
-  
+
     console.log("----- Indication Received -----");
     console.log("MIN : ", min);
     console.log("MAX : ", max);
@@ -125,48 +139,119 @@ const BloodPressure = (props) => {
       updateStatusElement("irregularPulseStatusCard", !irregularPulseDetected, "No irregular pulse detected", "Irregular pulse detected");
     }
     console.log("-------------------------------");
-  
+
     var mn = document.getElementById("mn");
     mn.innerText = min;
-    
+
     var mx = document.getElementById("mx");
     mx.innerText = max;
-    
+
     var mp = document.getElementById("mp");
     mp.innerText = map;
-  
+
     var p = document.getElementById("p");
     p.innerText = pulse;
   }
 
+  function IntermediateCuffPressureMeasurement(event) {
+    console.log(" >> Intermediate Cuff Pressure notification received : ");
+    const buf = new Uint8Array(event.target.value.buffer);
+    const dataView = event.target.value;
+    console.log(buf);
+    const bufHex = buf2hex(buf);
+    console.log(bufHex);
+
+    const flags = dataView.getUint8(0);
+    let offset = 1;
+    const cuffPressure = dataView.getUint16(offset, true);
+    const pressureUnit = (flags & (1 << 0)) ? "kPa" : "mmHg";
+
+    console.log("----- Intermediate Cuff Pressure Notification -----");
+    console.log("Cuff Pressure : ", cuffPressure, pressureUnit);
+    console.log("Flags : ", flags);
+    console.log("---------------------------------------------------");
+
+    const icpValue = document.getElementById("icpValue");
+    const icpUnit = document.getElementById("icpUnit");
+    if (icpValue && icpUnit) {
+      icpValue.innerText = cuffPressure;
+      icpUnit.innerText = pressureUnit;
+    }
+  }
+
   async function readStatus() {
     var value = await ReadCharacteristic.characteristic.readValue();
-    let statusWord = new Uint8Array(value.buffer);
-    console.log("Status : ", statusWord);
-  
-    let binaryString = statusWord[0].toString(2).padStart(8, '0');
-  
+    const featureWord = value.getUint16(0, true);
+    console.log("Status : ", featureWord);
 
-    let bodyMovementDetectionSupport = binaryString[7] === '1'; 
-    let cuffFitDetectionSupport = binaryString[6] === '1';
-    let irregularPulseDetectionSupport = binaryString[5] === '1';
-    let pulseRateRangeDetectionSupport = binaryString[4] === '1';
-    let measurementPositionDetectionSupport = binaryString[3] === '1';
-  
+    let bodyMovementDetectionSupport = (featureWord & (1 << 0)) !== 0;
+    let cuffFitDetectionSupport = (featureWord & (1 << 1)) !== 0;
+    let irregularPulseDetectionSupport = (featureWord & (1 << 2)) !== 0;
+    let pulseRateRangeDetectionSupport = (featureWord & (1 << 3)) !== 0;
+    let measurementPositionDetectionSupport = (featureWord & (1 << 4)) !== 0;
+    let multipleBondSupport = (featureWord & (1 << 5)) !== 0;
 
-    console.log("Status: ", binaryString);
+
+    console.log("Status (hex): ", `0x${featureWord.toString(16).padStart(4, '0')}`);
     console.log("Body Movement Detection Support: ", bodyMovementDetectionSupport);
     console.log("Cuff Fit Detection Support: ", cuffFitDetectionSupport);
     console.log("Irregular Pulse Detection Support: ", irregularPulseDetectionSupport);
     console.log("Pulse Rate Range Detection Support: ", pulseRateRangeDetectionSupport);
     console.log("Measurement Position Detection Support: ", measurementPositionDetectionSupport);
+    console.log("Multiple Bond Support: ", multipleBondSupport);
+
+    updateSupportedFeatures(featureWord);
+  }
+
+  function updateSupportedFeatures(featureWord) {
+    updateStatusElement(
+      "featureBodyMovementCard",
+      (featureWord & (1 << 0)) !== 0,
+      "Body Movement Detection: Supported",
+      "Body Movement Detection: Not supported"
+    );
+
+    updateStatusElement(
+      "featureCuffFitCard",
+      (featureWord & (1 << 1)) !== 0,
+      "Cuff Fit Detection: Supported",
+      "Cuff Fit Detection: Not supported"
+    );
+
+    updateStatusElement(
+      "featureIrregularPulseCard",
+      (featureWord & (1 << 2)) !== 0,
+      "Irregular Pulse Detection: Supported",
+      "Irregular Pulse Detection: Not supported"
+    );
+
+    updateStatusElement(
+      "featurePulseRangeCard",
+      (featureWord & (1 << 3)) !== 0,
+      "Pulse Rate Range Detection: Supported",
+      "Pulse Rate Range Detection: Not supported"
+    );
+
+    updateStatusElement(
+      "featureMeasurementPositionCard",
+      (featureWord & (1 << 4)) !== 0,
+      "Measurement Position Detection: Supported",
+      "Measurement Position Detection: Not supported"
+    );
+
+    updateStatusElement(
+      "featureMultipleBondCard",
+      (featureWord & (1 << 5)) !== 0,
+      "Multiple Bond: Supported",
+      "Multiple Bond: Not supported"
+    );
   }
 
 
   function updateStatusElement(elementId, status, positiveText, negativeText) {
     const container = document.getElementById(elementId);
     let newIconHTML;
-  
+
     if (status) {
       newIconHTML = `<box-icon name='check-circle' type='solid' size='md' color='#50e008'></box-icon>`;
       container.innerHTML = newIconHTML + `<h3 class="passion__title2"><strong>${positiveText}</strong></h3>`;
@@ -233,6 +318,15 @@ const BloodPressure = (props) => {
         <h3><strong>Measurement Status</strong></h3>
       </div>
 
+      <div class="passion__container3 container grid">
+        <div class="passion__card3" id="intermediateCuffPressureCard">
+          <div class="unite">
+            <box-icon name='pulse' type='solid' size='md' color='#74747c'></box-icon>
+            <h3 class="passion__title2"><strong>Intermediate Cuff Pressure: <span id="icpValue">--</span> <span id="icpUnit">mmHg</span></strong></h3>
+          </div>
+        </div>
+      </div>
+
       <div class="passion__container2 container grid">
         <div class="passion__card2" id="pulseStatusCard">
           <div class="unite">
@@ -275,8 +369,56 @@ const BloodPressure = (props) => {
 
     </div>
 
+    <div className="titlebox2">
+      <h3><strong>Supported Feature</strong></h3>
+    </div>
+
+    <div class="passion__container2 container grid">
+      <div class="passion__card2" id="featureBodyMovementCard">
+        <div class="unite">
+          <box-icon name='x-circle' type='solid' size='md' color='#fb1107'></box-icon>
+          <h3 class="passion__title2"><strong>Body Movement Detection: Not supported</strong></h3>
+        </div>
+      </div>
+
+      <div class="passion__card2" id="featureCuffFitCard">
+        <div class="unite">
+          <box-icon name='x-circle' type='solid' size='md' color='#fb1107'></box-icon>
+          <h3 class="passion__title2"><strong>Cuff Fit Detection: Not supported</strong></h3>
+        </div>
+      </div>
+
+      <div class="passion__card2" id="featureIrregularPulseCard">
+        <div class="unite">
+          <box-icon name='x-circle' type='solid' size='md' color='#fb1107'></box-icon>
+          <h3 class="passion__title2"><strong>Irregular Pulse Detection: Not supported</strong></h3>
+        </div>
+      </div>
+
+      <div class="passion__card2" id="featurePulseRangeCard">
+        <div class="unite">
+          <box-icon name='x-circle' type='solid' size='md' color='#fb1107'></box-icon>
+          <h3 class="passion__title2"><strong>Pulse Rate Range Detection: Not supported</strong></h3>
+        </div>
+      </div>
+
+      <div class="passion__card2" id="featureMeasurementPositionCard">
+        <div class="unite">
+          <box-icon name='x-circle' type='solid' size='md' color='#fb1107'></box-icon>
+          <h3 class="passion__title2"><strong>Measurement Position Detection: Not supported</strong></h3>
+        </div>
+      </div>
+
+      <div class="passion__card2" id="featureMultipleBondCard">
+        <div class="unite">
+          <box-icon name='x-circle' type='solid' size='md' color='#fb1107'></box-icon>
+          <h3 class="passion__title2"><strong>Multiple Bond: Not supported</strong></h3>
+        </div>
+      </div>
+    </div>
+
     </div></>
-     
+
   );
 };
 

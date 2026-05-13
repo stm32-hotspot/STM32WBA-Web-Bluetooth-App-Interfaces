@@ -1,12 +1,31 @@
-| Component                       | Copyright                          | License        | Link                                   |
-|:---------                       |:----------                         |:-------        |:-------           
-| popperjs | Federico Zivolo and contributors | MIT | https://github.com/vusion/popper.js/blob/master/LICENSE.md
-| bootstrap | The Bootstrap Authors | MIT | https://github.com/twbs/bootstrap/blob/main/LICENSE
-| buffer | Feross Aboukhadijeh, and other contributors | MIT | https://github.com/toots/buffer-browserify/blob/master/LICENSE
-| chart.js | Chart.js Contributors | MIT | https://github.com/chartjs/Chart.js/blob/master/LICENSE.md
-| gh-pages | Tim Schaub | MIT | https://github.com/tschaub/gh-pages/blob/main/LICENSE
-| react | Meta Platforms, Inc. and affiliates | MIT | https://github.com/facebook/react/blob/main/LICENSE
-| react-bootstrap | Stephen J. Collings, Matthew Honnibal, Pieter Vanderwerff | MIT | https://github.com/react-bootstrap/react-bootstrap/blob/master/LICENSE
-| react-chartjs-2 | Jeremy Ayerst | MIT | https://github.com/reactchartjs/react-chartjs-2/blob/master/LICENSE
-| cbor.js | Patrick Gansterer (paroga) | MIT | https://github.com/paroga/cbor-js/blob/master/LICENSE
+| Component | Scope | License | Link |
+|:--        |:--    |:--      |:--   |
+| @cdot/cbor | dependency | MIT | https://www.npmjs.com/package/@cdot/cbor |
+| @popperjs/core | dependency | MIT | https://www.npmjs.com/package/@popperjs/core |
+| @testing-library/jest-dom | dependency | MIT | https://www.npmjs.com/package/@testing-library/jest-dom |
+| @testing-library/react | dependency | MIT | https://www.npmjs.com/package/@testing-library/react |
+| @testing-library/user-event | dependency | MIT | https://www.npmjs.com/package/@testing-library/user-event |
+| body-parser | dependency | MIT | https://www.npmjs.com/package/body-parser |
+| bootstrap | dependency | MIT | https://www.npmjs.com/package/bootstrap |
+| boxicons | dependency | (CC-BY-4.0 OR OFL-1.1 OR MIT) | https://www.npmjs.com/package/boxicons |
+| buffer | dependency | MIT | https://www.npmjs.com/package/buffer |
+| cbor | dependency | MIT | https://www.npmjs.com/package/cbor |
+| cbor-web | dependency | MIT | https://www.npmjs.com/package/cbor-web |
+| chart.js | dependency | MIT | https://www.npmjs.com/package/chart.js |
+| commander | dependency | MIT | https://www.npmjs.com/package/commander |
+| cors | dependency | MIT | https://www.npmjs.com/package/cors |
+| crc | dependency | MIT | https://www.npmjs.com/package/crc |
+| react | dependency | MIT | https://www.npmjs.com/package/react |
+| react-bootstrap | dependency | MIT | https://www.npmjs.com/package/react-bootstrap |
+| react-chartjs-2 | dependency | MIT | https://www.npmjs.com/package/react-chartjs-2 |
+| react-dom | dependency | MIT | https://www.npmjs.com/package/react-dom |
+| react-markdown | dependency | MIT | https://www.npmjs.com/package/react-markdown |
+| react-router-dom | dependency | MIT | https://www.npmjs.com/package/react-router-dom |
+| sass | dependency | MIT | https://www.npmjs.com/package/sass |
+| @vitejs/plugin-react | devDependency | MIT | https://www.npmjs.com/package/@vitejs/plugin-react |
+| gh-pages | devDependency | MIT | https://www.npmjs.com/package/gh-pages |
+| marked | devDependency | MIT | https://www.npmjs.com/package/marked |
+| vite | devDependency | MIT | https://www.npmjs.com/package/vite |
+| vitest | devDependency | MIT | https://www.npmjs.com/package/vitest |
+| cbor.js (vendored file) | source file | MIT | https://github.com/paroga/cbor-js/blob/master/LICENSE |
 

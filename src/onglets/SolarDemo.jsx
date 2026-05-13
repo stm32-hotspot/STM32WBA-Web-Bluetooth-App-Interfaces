@@ -25,13 +25,13 @@ Chart.register(...registerables);
 const SolarDemo = (props) => {
     const GRAPH_MAX_LABELS = 25;
     let notifyCharacteristicTemp;
-    let notifyCharacteristicLux;; 
+    let notifyCharacteristicLux;;
 
     let TemperatureDataSet = [];
     let TemperatureTime = [];
     let LuxDataSet = [];
     let LuxTime = [];
-    
+
     let chartConfigTemp = {
         type: "line",
         data: {
@@ -50,7 +50,7 @@ const SolarDemo = (props) => {
                 duration: 0,
             },
             plugins: {
-                legend: { 
+                legend: {
                     display: false },
                 title: {
                     position: 'top',
@@ -72,8 +72,12 @@ const SolarDemo = (props) => {
         if (chartContainerTemp && chartContainerTemp.current) {
             const newChartInstanceTemp = new Chart(chartContainerTemp.current, chartConfigTemp);
             setChartInstanceTemp(newChartInstanceTemp);
+
+            return () => {
+                newChartInstanceTemp.destroy();
+            };
         }
-    }, [chartContainerTemp]);
+    }, []);
 
         let chartConfigLux = {
         type: "line",
@@ -93,7 +97,7 @@ const SolarDemo = (props) => {
                 duration: 0,
             },
             plugins: {
-                legend: { 
+                legend: {
                     display: false },
                 title: {
                     position: 'top',
@@ -114,8 +118,12 @@ const SolarDemo = (props) => {
         if (chartContainerLux && chartContainerLux.current) {
             const newChartInstanceLux = new Chart(chartContainerLux.current, chartConfigLux);
             setChartInstanceLux(newChartInstanceLux);
+
+            return () => {
+                newChartInstanceLux.destroy();
+            };
         }
-    }, [chartContainerLux]);
+    }, []);
 
 
     const updateTempDataset = (datasetIndex, data) => {
@@ -185,7 +193,7 @@ const SolarDemo = (props) => {
   });
 
     document.getElementById("readmeInfo").style.display = "none";
-  
+
 
     async function onNotifyButtonClick() {
         let notifStatus = document.getElementById('notifyButton').innerHTML;
@@ -216,7 +224,7 @@ const SolarDemo = (props) => {
         console.log("Temp Notification Received");
         var buf = new Uint8Array(event.target.value.buffer);
         console.log(buf);
-        
+
         createLogElement(buf, 2, "Lux NOTIFICATION");
         updateTempDataset(0, buf[0])
     }
@@ -224,18 +232,18 @@ const SolarDemo = (props) => {
         console.log("Lux Notification Received");
         var buf = new Uint8Array(event.target.value.buffer);
         console.log(buf);
-        
+
         createLogElement(buf, 2, "Lux NOTIFICATION");
         updateLuxDataset(0, buf[0]+(buf[1]<<8))
     }
 
-    
+
   const popoverWriteButton = (
     <Popover id="popover-trigger-hover-focus" title="Popover bottom">
       <strong>Info :</strong> Write the heart rate control point.
     </Popover>
   );
-    
+
   const popoverNotifyButton = (
     <Popover id="popover-trigger-hover-focus" title="Popover bottom">
       <strong>Info :</strong> Enable the reception of notifications from the connected device. <br />
@@ -266,21 +274,21 @@ const SolarDemo = (props) => {
             <div class="card text-dark bg-light mb-3">
                 <div class="card-header" >Solar Demo Chart</div>
 
-                
-                <div style={{height: "400px", width: "100%"}}>  
+
+                <div style={{height: "400px", width: "100%"}}>
                     <canvas ref={chartContainerLux}></canvas>
                 </div>
-                
-                <div style={{height: "400px", width: "100%"}}>  
+
+                <div style={{height: "400px", width: "100%"}}>
                     <canvas ref={chartContainerTemp}></canvas>
                 </div>
-                
+
                 <div class="card-footer">
                     <small class="text-muted"></small>
                 </div>
             </div>
-            
-            
+
+
         </div>
     </div>
     );

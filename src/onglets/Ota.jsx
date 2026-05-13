@@ -15,11 +15,11 @@
 //  ******************************************************************************
 import React, { useState, useEffect } from 'react';
 import { Buffer } from 'buffer';
-import { createLogElement, startOtaUpdate} from "../components/Header";
+import { createLogElement } from "../components/Header";
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import iconInfo from '../images/iconInfo.svg';
 
-import { deviceId } from '../components/Header.js';
+import { deviceId } from '../components/Header.jsx';
 
 const REBOOT = 1;
 const READY_TO_RECEIVE = 2;
@@ -56,10 +56,10 @@ const Ota = (props) => {
     });
 
     const [githubUrl, setGithubUrl] = useState(localStorage.getItem('githubUrl') || '');
-    const [binaryFileName, setBinaryFileName] = useState(''); 
+    const [binaryFileName, setBinaryFileName] = useState('');
     const [manualFileSelection, setManualFileSelection] = useState(false);
     const [selectedAction, setSelectedAction] = useState('application')
-  
+
     useEffect(() => {
       const handleGithubUrlUpdate = (event) => {
         setGithubUrl(event.detail);
@@ -69,7 +69,7 @@ const Ota = (props) => {
         setManualFileSelection(false); // Reset manual file selection when a new GitHub URL is set
       };
       window.addEventListener('githubUrlUpdated', handleGithubUrlUpdate);
-    
+
       if (githubUrl) {
         fetchBinaryFromGitHub(githubUrl);
         const fileName = githubUrl.split('/').pop();
@@ -88,7 +88,7 @@ const Ota = (props) => {
           else {
             actionChoice.value = "080000";
           }
-        }        
+        }
         uploadAction = "002";
         if (selectedAction === 'application') {
           document.getElementById("applicationSelectFilePart").style.display = "block";
@@ -99,13 +99,13 @@ const Ota = (props) => {
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
-    
+
       return () => {
         window.removeEventListener('githubUrlUpdated', handleGithubUrlUpdate);
       };
     }, [githubUrl]);
 
-    
+
   document.getElementById("readmeInfo").style.display = "none";
 
   const fetchBinaryFromGitHub = async (url) => {
@@ -127,7 +127,7 @@ const Ota = (props) => {
       setManualFileSelection(false);
     }
   };
-   
+
   // Authorize the reception of indications / notifications
     console.log('Indications ON');
     indicateCharacteristic.characteristic.startNotifications();
@@ -164,7 +164,7 @@ const Ota = (props) => {
         hexStringThirdPart = parseInt(hexStringThirdPart, 16);
 
         let myWord = new Uint8Array(5);
-        myWord[0] = uploadAction; // Action 
+        myWord[0] = uploadAction; // Action
         myWord[1] = hexStringFistPart; // Address
         myWord[2] = hexStringSecondePart; // Address
         myWord[3] = hexStringThirdPart; // Address
@@ -182,7 +182,7 @@ const Ota = (props) => {
     function indicationTimeout() {
       document.getElementById("uploadButton").innerHTML = `<div>Something went wrong... Please reset the device and wait for disconnection</div> <div class="spinner-border text-danger" role="status" style={float:right}></div>`
     }
-    
+
 
     async function onUploadButtonClick() {
       if(manualySettingNbSector == false){
@@ -206,7 +206,7 @@ const Ota = (props) => {
       let end = CHUNK_LENGTH;
       let sub;
       let totalBytes = 0;
-  
+
       if(readyToReceive == true){
         // Slice the fileContent (the binary file) into small chucks of CHUNK_LENGTH
         // And send them to the device
@@ -313,7 +313,7 @@ const Ota = (props) => {
           else {
             actionChoice.value = "080000";
           }
-        }   
+        }
 
         break;
     }
@@ -343,7 +343,7 @@ const Ota = (props) => {
     // Get the checkbox
     var checkBox = document.getElementById("checkboxNbSector");
     var inputSector = document.getElementById("nbSector");
-        
+
     // If the checkbox is checked, display the output text
     if (checkBox.checked == true){
       manualySettingNbSector = true;
@@ -355,13 +355,13 @@ const Ota = (props) => {
       console.log("auto Nb Sector");
     }
   }
- 
+
   const popoverUserData = (
     <Popover id="popover-trigger-hover-focus" title="Popover bottom">
       <strong>Info :</strong> In contains the User Data that need to be kept along with firmware update.​
     </Popover>
   );
-  
+
   const popoverApplicationBinary = (
     <Popover id="popover-trigger-hover-focus" title="Popover bottom">
       <strong>Info :</strong> Choose either a file from your device or file fetch from the STMicroelectronics Hotspot. <br />
@@ -373,7 +373,7 @@ const Ota = (props) => {
     return (
     <div className="container-fluid">
         <div className="container">
-          
+
           <div className="input-group">
             <div className="input-group-text">
               <input className="form-check-input mt-0" type="radio" value="userData" name='selectAction' onClick={onActionRadioButtonClick} ></input>
@@ -399,7 +399,7 @@ const Ota = (props) => {
               </h3>
             </div>
           </div>
-          
+
           <div id='applicationSelectFilePart' style={{"display": "block"}}>
             <div id='applicationBinaryList' style={{"display": "block"}}>
               <h3>Application
@@ -416,7 +416,7 @@ const Ota = (props) => {
           <div id='configDiv'style={{"display": "block"}}>
 
           <div className="input-group mb-3">
-              <label>Choosing manually the binary file &nbsp;</label> 
+              <label>Choosing manually the binary file &nbsp;</label>
               <label class="containerCheckBox" >
               <input type="checkbox" id="manualFileCheckbox" onChange={() => setManualFileSelection(!manualFileSelection)} />
               <span class="checkmark"></span>
@@ -439,13 +439,13 @@ const Ota = (props) => {
               <input type="text" className="form-control" placeholder="..." aria-describedby="startSectorChoise" maxLength="6" id="startSectorInput" ></input>
             </div>
             <div className="input-group mb-3">
-              <label>Setting manualy the number of sector &nbsp;</label> 
+              <label>Setting manualy the number of sector &nbsp;</label>
               <label class="containerCheckBox" onClick={checkBoxClicForNbSector}>
                 <input type="checkbox"id="checkboxNbSector" />
                 <span class="checkmark"></span>
               </label>
             </div>
-            
+
             <div className="input-group mb-3">
               <span className="input-group-text" id="nbSectorChoise" >Nb Sector</span>
               <input type="text" disabled="true" className="form-control" placeholder="..." aria-describedby="nbSectorChoise" maxLength="3" id="nbSector" defaultValue={"23"}></input>

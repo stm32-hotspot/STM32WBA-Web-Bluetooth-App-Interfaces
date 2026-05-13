@@ -13,7 +13,7 @@
 //  * If no LICENSE file comes with this software, it is provided AS-IS.
 //  *
 //  ******************************************************************************
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { createLogElement } from "../components/Header";
 import { Chart, registerables } from 'chart.js';
 import iconInfo from '../images/iconInfo.svg';
@@ -28,9 +28,9 @@ const HeartRate = (props) => {
     let writeCharacteristic; // 00002a39-0000-1000-8000-00805f9b34fbs
     //let rebootCharacteristic;
     let displayRebootPanel = "none";
-    let heartRateDataSet = [];
-    let heartRateTime = [];
-    
+    const heartRateDataSet = useRef([]);
+    const heartRateTime = useRef([]);
+
     let chartConfig = {
         type: "line",
         data: {
@@ -38,7 +38,7 @@ const HeartRate = (props) => {
             datasets: [{
                 borderColor: '#03234B',
                 backgroundColor: '#3CB4E6',
-                data: heartRateDataSet,
+                data: [],
               }],
         },
         options: {
@@ -49,7 +49,7 @@ const HeartRate = (props) => {
                 duration: 0,
             },
             plugins: {
-                legend: { 
+                legend: {
                     display: false },
                 title: {
                     position: 'top',
@@ -65,14 +65,27 @@ const HeartRate = (props) => {
     }
 
     const chartContainer = useRef(null);
-    const [chartInstance, setChartInstance] = useState(null);
+    const chartInstance = useRef(null);
 
     useEffect(() => {
-        if (chartContainer && chartContainer.current) {
-            const newChartInstance = new Chart(chartContainer.current, chartConfig);
-            setChartInstance(newChartInstance);
+        if (!chartContainer.current) {
+            return;
         }
-    }, [chartContainer]);
+
+        if (chartInstance.current) {
+            chartInstance.current.destroy();
+            chartInstance.current = null;
+        }
+
+        chartInstance.current = new Chart(chartContainer.current, chartConfig);
+
+        return () => {
+            if (chartInstance.current) {
+                chartInstance.current.destroy();
+                chartInstance.current = null;
+            }
+        };
+    }, []);
 
     const updateDataset = (datasetIndex, data) => {
         let currentTime = new Date();
@@ -83,33 +96,38 @@ const HeartRate = (props) => {
             hour12: false
         });
 
-        if (heartRateDataSet.length >= GRAPH_MAX_LABELS) {
-            heartRateDataSet.pop(); // Remove the last element
-            heartRateDataSet.unshift(data); // Add data at the beginning of to the Array
-            heartRateTime.pop(); // Remove the last element
-            heartRateTime.unshift(time); // Add current time at the beginning of to the Array
+        const chart = chartInstance.current;
+        if (!chart) {
+            return;
+        }
+
+        if (heartRateDataSet.current.length >= GRAPH_MAX_LABELS) {
+            heartRateDataSet.current.pop(); // Remove the last element
+            heartRateDataSet.current.unshift(data); // Add data at the beginning of to the Array
+            heartRateTime.current.pop(); // Remove the last element
+            heartRateTime.current.unshift(time); // Add current time at the beginning of to the Array
         } else {
-            heartRateDataSet.unshift(data); // Add data at the beginning of to the Array
-            heartRateTime.unshift(time); // Add current time at the beginning of to the Array
+            heartRateDataSet.current.unshift(data); // Add data at the beginning of to the Array
+            heartRateTime.current.unshift(time); // Add current time at the beginning of to the Array
         }
 
         // Update the chart with new heartRateDataSet and heartRateTime values
-        chartInstance.data.datasets[datasetIndex].data = heartRateDataSet;
-        chartInstance.data.labels = heartRateTime;
-        chartInstance.update();
+        chart.data.datasets[datasetIndex].data = heartRateDataSet.current;
+        chart.data.labels = heartRateTime.current;
+        chart.update();
     };
 
     // Filtering the different datathroughput characteristics
     props.allCharacteristics.map(element => {
         switch (element.characteristic.uuid){
-            case "00002a37-0000-1000-8000-00805f9b34fb" : 
+            case "00002a37-0000-1000-8000-00805f9b34fb" :
                 notifyCharacteristic = element;
                 notifyCharacteristic.characteristic.stopNotifications();
             break;
-            case "00002a38-0000-1000-8000-00805f9b34fb" : 
+            case "00002a38-0000-1000-8000-00805f9b34fb" :
                 readCharacteristic = element;
             break;
-            case "00002a39-0000-1000-8000-00805f9b34fb" : 
+            case "00002a39-0000-1000-8000-00805f9b34fb" :
                 writeCharacteristic = element;
             break;
 
@@ -118,7 +136,10 @@ const HeartRate = (props) => {
         }
     });
 
-    document.getElementById("readmeInfo").style.display = "none";
+    const readmeInfo = document.getElementById("readmeInfo");
+    if (readmeInfo) {
+        readmeInfo.style.display = "none";
+    }
 
     // read button handler
     async function onReadButtonClick() {
@@ -182,7 +203,7 @@ const HeartRate = (props) => {
         console.log("Notification Received");
         var buf = new Uint8Array(event.target.value.buffer);
         console.log(buf);
-        
+
         document.getElementById('heartRateMeasurement').innerHTML = "Heart Rate measurement : " + buf[1].toString();
         document.getElementById('energyExpended').innerHTML = "Energy expended : " + buf[3].toString();
         document.getElementById('bodySensorLocation').innerHTML = "Body sensor location : " + buf[6].toString();
@@ -192,20 +213,20 @@ const HeartRate = (props) => {
         updateDataset(0, buf[1].toString())
     }
 
-    
+
   const popoverWriteButton = (
     <Popover id="popover-trigger-hover-focus" title="Popover bottom">
       <strong>Info :</strong> Write the heart rate control point.
     </Popover>
   );
-    
+
   const popoverNotifyButton = (
     <Popover id="popover-trigger-hover-focus" title="Popover bottom">
       <strong>Info :</strong> Enable the reception of notifications from the connected device. <br />
       Is required to display data on the chart.
     </Popover>
   );
-    
+
   const popoverReadButton = (
     <Popover id="popover-trigger-hover-focus" title="Popover bottom">
       <strong>Info :</strong> Read the body sensor location<br />
@@ -213,7 +234,7 @@ const HeartRate = (props) => {
       0x 4 : Hand
     </Popover>
   );
-    
+
   const popoverResetButton = (
     <Popover id="popover-trigger-hover-focus" title="Popover bottom">
       <strong>Info :</strong> Reset the energy expended.
@@ -253,10 +274,10 @@ const HeartRate = (props) => {
             </div>
             <div className='row justify-content-center mt-3 mb-3'>
                 <div className='d-grid col-xs-6 col-sm-6 col-md-4 col-lg-4 m-2'>
-                    <div class="input-group">
-                        <span class="input-group-text" id="button-write">0x</span>
-                        <input type="text" class="form-control" placeholder="..." aria-describedby="button-write" maxLength="4" id="writeInput"></input>
-                        <button class="defaultButton" type="button" id="button-write" onClick={onWriteButtonClick} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Write Control Point">Write</button>
+                    <div className="input-group">
+                        <span className="input-group-text" id="button-write">0x</span>
+                        <input type="text" className="form-control" placeholder="..." aria-describedby="button-write" maxLength="4" id="writeInput"></input>
+                        <button className="defaultButton" type="button" id="button-write" onClick={onWriteButtonClick} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Write Control Point">Write</button>
                         <span>
                             <OverlayTrigger
                                 trigger={['hover', 'focus']}
@@ -280,26 +301,26 @@ const HeartRate = (props) => {
                                 <img className="iconInfo" src={iconInfo}></img>
                             </OverlayTrigger>
                         </span>
-                    </div>              
+                    </div>
                 </div>
             </div>
-            <div class="card text-dark bg-light mb-3">
-                <div class="card-header" >Heart Rate Chart</div>
-                <div class="card-body">
-                    <p class="card-text" id="heartRateMeasurement">Heart rate measurement :</p>
-                    <p class="card-text" id="energyExpended">Energy expended :</p>
-                    <p class="card-text" id="bodySensorLocation">Body sensor location :</p>
+            <div className="card text-dark bg-light mb-3">
+                <div className="card-header" >Heart Rate Chart</div>
+                <div className="card-body">
+                    <p className="card-text" id="heartRateMeasurement">Heart rate measurement :</p>
+                    <p className="card-text" id="energyExpended">Energy expended :</p>
+                    <p className="card-text" id="bodySensorLocation">Body sensor location :</p>
                 </div>
-                <div style={{height: "400px", width: "100%"}}>  
+                <div style={{height: "400px", width: "100%"}}>
                     <canvas ref={chartContainer}></canvas>
                 </div>
-                
-                <div class="card-footer">
-                    <small class="text-muted"></small>
+
+                <div className="card-footer">
+                    <small className="text-muted"></small>
                 </div>
             </div>
-            
-            
+
+
         </div>
     </div>
     );

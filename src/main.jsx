@@ -1,5 +1,5 @@
 // ******************************************************************************
-// * @file    config-overrides.js
+// * @file    main.jsx
 // * @author  MCD Application Team
 // *
 //  ******************************************************************************
@@ -11,17 +11,13 @@
 //  * This software is licensed under terms that can be found in the LICENSE file
 //  * in the root directory of this software component.
 //  * If no LICENSE file comes with this software, it is provided AS-IS.
+//  *
 //  ******************************************************************************
-const webpack = require('webpack');
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 
-module.exports = function override(config, env) {
-  // Add more polyfills if necessary
-  config.resolve.fallback = {
-    ...config.resolve.fallback,
-    "stream": require.resolve("stream-browserify"),
-    
-  };
-  console.log("CONFIG-OVERRIDES.js");
-  
-  return config;
-};
+import App from './App';
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  React.createElement(App)
+);

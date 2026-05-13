@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-(function (global, undefined) {
+const CBOR = (function (global, undefined) {
   "use strict";
   var POW_2_24 = 5.960464477539063e-8,
     POW_2_32 = 4294967296,
@@ -397,9 +397,11 @@
 
   var obj = { encode: encode, decode: decode };
 
-  if (typeof module !== "undefined" && module.exports)
-    module.exports = obj;
-  else if (!global.CBOR)
+  if (!global.CBOR)
     global.CBOR = obj;
 
-})(this);
+  return obj;
+
+})(typeof globalThis !== "undefined" ? globalThis : this);
+
+export default CBOR;

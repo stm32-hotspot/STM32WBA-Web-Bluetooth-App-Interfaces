@@ -1,4 +1,4 @@
-/* 
+/*
 ******************************************************************************
 * @file    style.css
 * @author  MCD Application Team
@@ -102,7 +102,7 @@ ul {
 .liProfile a:hover {
 	transform: scale(1.05);
 	color:  #3CB4E6;
-} 
+}
 
 li {
     text-align: -webkit-match-parent;
@@ -119,7 +119,7 @@ text-decoration: none;
 
 li a:hover {
 transform: scale(1.05);
-color: #3CB4E6;/* ST light blue 
+color: #3CB4E6;/* ST light blue
 }*/
 
 #logPanel {
@@ -129,7 +129,7 @@ color: #3CB4E6;/* ST light blue
     overflow: auto;
 	background-color: white;
 	height: -webkit-fill-available;
-	
+
 }
 
 .logElememt {
@@ -149,8 +149,8 @@ color: #3CB4E6;/* ST light blue
 
 .iconInfo {
 	height: auto;
-	width: 28px; 
-	float: right; 
+	width: 28px;
+	float: right;
 	margin: 5px;
 }
 
@@ -182,7 +182,7 @@ color: #3CB4E6;/* ST light blue
 	background-color: #425a78;
 	border: #425a78 solid 1px;
 }
-  
+
 .defaultButton:disabled, .defaultButton.disabled, fieldset:disabled .defaultButton {
 	pointer-events: none;
 	opacity: 0.65;
@@ -226,6 +226,96 @@ color: #3CB4E6;/* ST light blue
 	border: #a2a2a7 solid 1px;
 }
 
+.panel-card {
+	background: rgba(255, 255, 255, 0.9);
+	border: 1px solid rgba(3, 35, 75, 0.1);
+	border-radius: 16px;
+	box-shadow: 0 12px 32px rgba(3, 35, 75, 0.08);
+	margin: 1.5rem auto;
+	max-width: 1100px;
+	padding: 1.5rem;
+	text-align: left;
+}
+
+.panel-card h2,
+.config-hints p,
+.status-box {
+	text-align: left;
+}
+
+.eyebrow {
+	color: #e6007e;
+	font-size: 0.8rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	margin-bottom: 0.4rem;
+	text-transform: uppercase;
+}
+
+.config-panel-header {
+	align-items: flex-start;
+	display: flex;
+	gap: 1rem;
+	justify-content: space-between;
+	margin-bottom: 1.5rem;
+}
+
+.button-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	justify-content: flex-end;
+}
+
+.config-grid {
+	align-items: center;
+	display: grid;
+	gap: 0.9rem;
+	grid-template-columns: minmax(180px, 240px) 1fr;
+}
+
+.field-label {
+	font-weight: 700;
+	text-align: left;
+}
+
+.config-hints {
+	border-top: 1px solid rgba(3, 35, 75, 0.08);
+	margin-top: 1.5rem;
+	padding-top: 1rem;
+}
+
+.config-hints p {
+	color: #425a78;
+	margin-bottom: 0.4rem;
+}
+
+.status-box {
+	background: linear-gradient(135deg, rgba(3, 35, 75, 0.06), rgba(60, 180, 230, 0.12));
+	border-radius: 14px;
+	margin-top: 1rem;
+	padding: 1rem;
+}
+
+@media (max-width: 768px) {
+	.config-panel-header {
+		flex-direction: column;
+	}
+
+	.button-row {
+		justify-content: stretch;
+		width: 100%;
+	}
+
+	.button-row .defaultButton {
+		width: 100%;
+	}
+
+	.config-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
 #formFile {
 	content: "Pick file";
 }
@@ -239,7 +329,7 @@ color: #3CB4E6;/* ST light blue
 /* Customize the label (the container) */
 .containerCheckBox {
 	display: block;
-	position: relative;			
+	position: relative;
 	padding-left: 35px;
 	margin-bottom: 12px;
 	cursor: pointer;
@@ -249,7 +339,7 @@ color: #3CB4E6;/* ST light blue
 	-ms-user-select: none;
 	user-select: none;
   }
-  
+
   /* Hide the browser's default checkbox */
   .containerCheckBox input {
 	position: absolute;
@@ -258,7 +348,7 @@ color: #3CB4E6;/* ST light blue
 	height: 0;
 	width: 0;
   }
-  
+
   /* Create a custom checkbox */
   .checkmark {
 	position: absolute;
@@ -268,29 +358,29 @@ color: #3CB4E6;/* ST light blue
 	width: 25px;
 	background-color: #eee;
   }
-  
+
   /* On mouse-over, add a grey background color */
   .containerCheckBox:hover input ~ .checkmark {
 	background-color: #ccc;
   }
-  
+
   /* When the checkbox is checked, add a blue background */
   .containerCheckBox input:checked ~ .checkmark {
 	background-color: #03234B;
   }
-  
+
   /* Create the checkmark/indicator (hidden when not checked) */
   .checkmark:after {
 	content: "";
 	position: absolute;
 	display: none;
   }
-  
+
   /* Show the checkmark when checked */
   .containerCheckBox input:checked ~ .checkmark:after {
 	display: block;
   }
-  
+
   /* Style the checkmark/indicator */
   .containerCheckBox .checkmark:after {
 	left: 10px;
@@ -319,11 +409,11 @@ color: #3CB4E6;/* ST light blue
 color: #03234B;
 border-radius: 10px;
 background: #dee2e6;
-padding: 5px; 
+padding: 5px;
 padding-left: 0px; /*25px;*/
 margin-bottom: 5px;
 width: 100%;
-height: auto;  
+height: auto;
 font-family: Arial, sans-serif;
 display: flex;
 justify-content: space-between;
@@ -417,9 +507,118 @@ flex-wrap: wrap;
 	margin-left: 4%;
 	margin-right: 4%;
 	width: 8%;
-	border: none;
-	color: white;
-	font-family: Arial, sans-serif;
+
+}
+
+body {
+	background: #f6f8fb;
+}
+
+#root {
+	min-height: 120px;
+}
+
+.readmeSubTabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-bottom: 1rem;
+	padding-bottom: 0.75rem;
+	border-bottom: 1px solid #d6deea;
+}
+
+.readmeSubTab {
+	border: 1px solid #d6deea;
+	background: #f8fbff;
+	color: #03234B;
+	border-radius: 999px;
+	padding: 0.3rem 0.7rem;
+	font-size: 0.85rem;
+}
+
+.readmeSubTab.active {
+	border-color: #03234B;
+	background: #03234B;
+	color: #ffffff;
+}
+
+.readmeSubPanel {
+	display: none;
+}
+
+.readmeSubPanel.active {
+	display: block;
+}
+
+#readmeInfo {
+	visibility: visible;
+	max-width: 1100px;
+	margin: 1.25rem auto 2.5rem;
+	padding: 0 1rem;
+}
+
+.readmeCard {
+	background: #ffffff;
+	border: 1px solid #d6deea;
+	border-radius: 12px;
+	box-shadow: 0 10px 30px rgba(6, 24, 44, 0.06);
+	overflow: hidden;
+}
+
+.readmeHeader {
+	padding: 1rem 1.25rem;
+	font-size: 1.05rem;
+	font-weight: 600;
+	color: #0f2f5b;
+	background: linear-gradient(90deg, #eef4ff 0%, #f8fbff 100%);
+}
+
+.readmeTabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	overflow-x: hidden;
+	padding: 0.75rem 1rem;
+	border-bottom: 1px solid #d6deea;
+	background: #fcfdff;
+}
+
+.readmeTab {
+	border: 1px solid #c7d4ea;
+	background: #ffffff;
+	color: #03234B;
+	border-radius: 999px;
+	padding: 0.35rem 0.75rem;
+	font-size: 0.88rem;
+	white-space: nowrap;
+}
+
+.readmeTab.active {
+	border-color: #03234B;
+	background: #03234B;
+	color: #ffffff;
+}
+
+.readmeBody {
+	max-height: 72vh;
+	overflow: auto;
+	padding: 0;
+	line-height: 1.5;
+	text-align: left;
+}
+
+.readmePanel {
+	display: none;
+	padding: 1.25rem;
+}
+
+.readmePanel.active {
+	display: block;
+}
+
+.readmeBody img {
+	max-width: 100%;
+	height: auto;
 }
 
 /* Style buttons */
@@ -438,7 +637,7 @@ flex-wrap: wrap;
 
 
 
-.textTitle {    
+.textTitle {
 	margin: 2px;
     text-align: center;
     font-size: large;
@@ -475,14 +674,14 @@ p {
 	width: 60px;
 	height: 34px;
   }
-  
+
   /* Hide default HTML checkbox */
   .switch input {
 	opacity: 0;
 	width: 0;
 	height: 0;
   }
-  
+
   /* The slider */
   .slider {
 	position: absolute;
@@ -495,7 +694,7 @@ p {
 	-webkit-transition: .4s;
 	transition: .4s;
   }
-  
+
   .slider:before {
 	position: absolute;
 	content: "";
@@ -507,26 +706,26 @@ p {
 	-webkit-transition: .4s;
 	transition: .4s;
   }
-  
+
   input:checked + .slider {
 	background-color: #2196F3;
   }
-  
+
   input:focus + .slider {
 	box-shadow: 0 0 1px #2196F3;
   }
-  
+
   input:checked + .slider:before {
 	-webkit-transform: translateX(26px);
 	-ms-transform: translateX(26px);
 	transform: translateX(26px);
   }
-  
+
   /* Rounded sliders */
   .slider.round {
 	border-radius: 34px;
   }
-  
+
   .slider.round:before {
 	border-radius: 50%;
   }
@@ -589,42 +788,42 @@ tr:last-child td {
 .rcorners1 {
 	border-radius: 15px 50px 30px 5px;
 	background: #73AD21;
-	padding: 20px; 
+	padding: 20px;
 	width: 200px;
-	height: 150px; 
+	height: 150px;
   }
-  
+
   .rcorners2 {
 	border-radius: 15px 50px 30px;
 	background: #73AD21;
-	padding: 20px; 
+	padding: 20px;
 	width: 200px;
-	height: 150px; 
+	height: 150px;
 	direction: column;
   }
-  
- 
-  
+
+
+
   .rcorners4 {
 	border-radius: 15px;
 	background: #73AD21;
-	padding: 20px; 
+	padding: 20px;
 	width: 200px;
-	height: 150px; 
-  } 
+	height: 150px;
+  }
 
 
   .rcorners3 {
 	border-radius: 10px 30px;
 	background: #03234B;
-	padding: 20px; 
+	padding: 20px;
 	margin: 10px;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
 	height: auto;
 	width: 500px;
-  } 
+  }
 
   .tempContainer {
 	flex-direction: row;
@@ -666,7 +865,7 @@ tr:last-child td {
 	width: 80%;
   }
 
-  
+
   /*#################  Finger Print ################*/
   #fingericon {
     fill: black;
@@ -683,7 +882,7 @@ tr:last-child td {
 	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 	grid-gap: 10px;
   }
-  
+
   .wifiItem {
 	background-color: #f2f2f2;
 	border: 1px solid #ddd;
@@ -695,7 +894,7 @@ tr:last-child td {
 	height: 200px;
 	overflow-y: auto;
   }
-  
+
   .wifiList {
 	display: flex;
 	flex-direction: column;
@@ -708,27 +907,27 @@ tr:last-child td {
 	color:#ffffff;
 
   }
-  
+
   .ping-table th, .ping-table td {
 	border-bottom: 1px solid #ffffff;
 	padding: 10px;
 	text-align: center;
   }
-  
+
   .btn-wifi {
-	background-color: #FFD200; 
-	border: none; 
-	color: rgb(0, 0, 0); 
-	padding: 5px 15px; 
+	background-color: #FFD200;
+	border: none;
+	color: rgb(0, 0, 0);
+	padding: 5px 15px;
 	text-align: center;
 	text-decoration: none;
-	display: inline-block; 
-	font-size: 16px; 
-	margin: 5px 2px; 
+	display: inline-block;
+	font-size: 16px;
+	margin: 5px 2px;
 	cursor: pointer;
 	border-radius: 8px;
   }
-  
+
   .btn-wifi:hover {
 	background-color: #ffe46e; /* Couleur de fond au survol */
   }
@@ -768,7 +967,7 @@ tr:last-child td {
 	}
   }
   /*#################  Wifi Commissioning ################*/
- 
+
   .grid-container {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -781,7 +980,7 @@ tr:last-child td {
 	cursor: pointer;
 	float: left;
   }
- 
+
   .wifiListContainer {
 	height: 240px;
 	overflow-y: auto;
@@ -791,19 +990,19 @@ tr:last-child td {
 	flex-direction: column;
 	gap: 10px;
   }
- 
+
   .wifi-icon {
 	/* Vous pouvez ajouter des styles de base pour l'icône ici */
 	width: 24px; /* Largeur de l'icône */
   	height: 24px; /* Hauteur de l'icône */
   }
- 
+
   .wifi-container {
 	background-color: #0c2a4b; /* Couleur de fond bleue */
 	padding: 20px; /* Espace intérieur pour faire ressortir le contenu */
 	border-radius: 10px; /* Coins arrondis pour la case */
   }
- 
+
   .wifi-state-title {
 	color: white; /* Définit la couleur du texte en blanc */
   }
@@ -812,7 +1011,7 @@ tr:last-child td {
 	height: 100px; /* Hauteur de l'image */
 	margin-right: 10px; /* Ajout d'une marge à droite pour rapprocher du texte */
   }
- 
+
   .wifi-status-container {
 	display: flex;
 	justify-content: center; /* Centrer horizontalement */
@@ -823,8 +1022,8 @@ tr:last-child td {
 	margin: 0; /* Suppression des marges par défaut */
 	color: white; /* Couleur du texte en blanc pour contraster avec le fond bleu */
   }
- 
- 
+
+
   .white-text {
 	color: white;
   }
@@ -849,7 +1048,7 @@ tr:last-child td {
 	margin-top: 15px;
 	margin-bottom: 10px;
 
-	
+
 }
 
 .titlebox2 {
@@ -881,21 +1080,21 @@ tr:last-child td {
 }
 
 .passion__container{
-	
+
 	padding-top: 1rem;
 	grid-template-columns: repeat(4, 1fr);
 	padding-bottom: 1rem;
 }
 
 .passion__container2{
-	
+
 	padding-top: 1rem;
 	grid-template-columns: repeat(2, 1fr);
 	padding-bottom: 1rem;
 }
 
 .passion__container3{
-	
+
 	padding-top: 1rem;
 	grid-template-columns: repeat(1, 70%);
 	padding-bottom: 1rem;
@@ -947,8 +1146,8 @@ tr:last-child td {
 	margin-right: 10px;
 	margin-left: 5px;
 	font-size: 20px;
-	
-	
+
+
 }
 
 .passion__title{
@@ -965,7 +1164,7 @@ tr:last-child td {
 }
 
 .unite{
-	
+
 	flex-direction: row;
 	align-content: center;
 	justify-content: center;
@@ -984,7 +1183,7 @@ tr:last-child td {
 
 @media (max-width: 768px) {
     .passion__container {
-        grid-template-columns: repeat(2, 1fr); 
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .passion__container2 {
@@ -992,57 +1191,57 @@ tr:last-child td {
     }
 
     .passion__container3 {
-        grid-template-columns: repeat(1, 100%); 
+        grid-template-columns: repeat(1, 100%);
 		justify-content: left;
 		align-items: left;
     }
 
     .passion__card, .passion__card2, .passion__card3 {
-        padding: 0.5rem; 
+        padding: 0.5rem;
 		justify-content: left;
 		align-items: left;
     }
 
     .passion__title {
-        font-size: 24px; 
+        font-size: 24px;
     }
 
     .passion__title2 {
-        font-size: 20px; 
+        font-size: 20px;
     }
 
     .BLPInfo {
-        font-size: 48px; 
+        font-size: 48px;
     }
 
     .passion__card p {
-        font-size: 16px; 
+        font-size: 16px;
     }
 }
 
 @media (max-width: 480px) {
     .passion__container {
-        grid-template-columns: 1fr; 
+        grid-template-columns: 1fr;
     }
 
     .passion__card, .passion__card2, .passion__card3 {
-        padding: 0.5rem; 
+        padding: 0.5rem;
     }
 
     .passion__title {
-        font-size: 20px; 
+        font-size: 20px;
     }
 
     .passion__title2 {
-        font-size: 18px; 
+        font-size: 18px;
     }
 
     .BLPInfo {
-        font-size: 36px; 
+        font-size: 36px;
     }
 
     .passion__card p {
-        font-size: 14px; 
+        font-size: 14px;
     }
 }
 
@@ -1059,7 +1258,7 @@ tr:last-child td {
 	margin-top: 15px;
 	margin-bottom: 10px;
 
-	
+
 }
 
 .WSlogo{
@@ -1082,7 +1281,7 @@ tr:last-child td {
 }
 
 .WS__container{
-	
+
 	padding-top: 1rem;
 	grid-template-columns: repeat(3, 1fr);
 	padding-bottom: 1rem;
@@ -1155,20 +1354,20 @@ tr:last-child td {
     }
 
     .heightlogo, .heightlogo2 {
-        width: auto; 
+        width: auto;
         height: auto;
         max-width: 100%;
-        max-height: 100%; 
+        max-height: 100%;
     }
 
     .WStitle__card h3, .WStitle__card3 h3, .WSInfo, .BMIInfo {
-        font-size: 40px; 
+        font-size: 40px;
     }
 }
 
 @media (max-width: 480px) {
     .WS__container {
-        grid-template-columns: 1fr; 
+        grid-template-columns: 1fr;
     }
 
     .WStitle__card h3, .WStitle__card3 h3,.WSInfo, .BMIInfo {
@@ -1220,22 +1419,22 @@ tr:last-child td {
 }
 
 .chart-container {
-	grid-column: 2 / -1; 
+	grid-column: 2 / -1;
   }
 
   @media (max-width: 768px) {
     .WS__container, .RSC__container {
-        grid-template-columns: repeat(2, 1fr); 
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .RSCtitle__card2, .chart-container {
-        grid-column: auto; 
+        grid-column: auto;
     }
 
 
 
     .RSCInfo {
-        font-size: 24px; 
+        font-size: 24px;
     }
 
     .form-control {
@@ -1245,22 +1444,22 @@ tr:last-child td {
 
 @media (max-width: 480px) {
     .WS__container, .RSC__container {
-        grid-template-columns: 1fr; 
+        grid-template-columns: 1fr;
     }
 
     .RSCInfo {
-        font-size: 20px; 
+        font-size: 20px;
     }
 
     .form-control {
-        font-size: 20px; 
+        font-size: 20px;
     }
 }
 
   /*################# Continuous Glucose Monitoring ################*/
 
 .CGM__container{
-	
+
 	padding-top: 1rem;
 	grid-template-columns: repeat(2, 1fr);
 	padding-bottom: 1rem;
@@ -1271,16 +1470,16 @@ tr:last-child td {
 }
 
 .CGM__container2{
-	
+
 	padding-top: 1rem;
 	padding-bottom: 1rem;
 	align-items: center;
 	justify-content: center;
-	
+
 }
 
 .CGM__container3{
-	
+
 	padding-top: 1rem;
 	grid-template-columns: repeat(2, 1fr);
 	padding-bottom: 1rem;
@@ -1291,16 +1490,16 @@ tr:last-child td {
 
 
 .CGM__container4{
-	
-	
+
+
 	gap: 10px;
 	align-items: center;
-	
+
 	display: flex;
 }
 
 .CGM__container5{
-	
+
 	padding-top: 1rem;
 	grid-template-columns: repeat(1, 1fr);
 	padding-bottom: 1rem;
@@ -1335,13 +1534,13 @@ tr:last-child td {
 
     text-align: center;
 	color:white;
-	
+
 }
 
 .CGM__table {
 	border-collapse: collapse;
 	border-radius: 1.5rem;
-	width: 80%;      
+	width: 80%;
 	height: fit-content;
 	background-color: #03234B;
 }
@@ -1368,7 +1567,7 @@ tr:last-child td {
 	border-collapse: collapse;
 	border: 3px solid grey;
 	border-radius: 1.5rem;
-	width: 80%;      
+	width: 80%;
 	height: fit-content;
 }
 
@@ -1395,9 +1594,9 @@ tr:last-child td {
 	height: 100%;
 	display: flex;
 	justify-content: center;
-	align-items: center;     
-	flex-direction: column; 
-	margin: auto;           
+	align-items: center;
+	flex-direction: column;
+	margin: auto;
   }
 
 .CGMtitle__card2{
@@ -1408,13 +1607,13 @@ tr:last-child td {
 }
 
 .CGMtitle__card2 select {
-	font-size: 1.3rem; 
+	font-size: 1.3rem;
 	color: #03234B;
 	font-weight: bold;
-	background-color: #dee2e6; 
-	padding: 0.3rem; 
+	background-color: #dee2e6;
+	padding: 0.3rem;
 	border: none;
-	width: 90%; 
+	width: 90%;
   }
 
   .CGMtitle__card3{
@@ -1439,11 +1638,11 @@ tr:last-child td {
 }
 
 .CGMtitle__card4 button{
-	font-size: 1.3rem; 
+	font-size: 1.3rem;
 	color: white;
 	font-weight: bold;
-	background-color: #03234B;  
-	border: none; 
+	background-color: #03234B;
+	border: none;
 }
 
 .CGMtitle__card4:hover {
@@ -1467,11 +1666,11 @@ tr:last-child td {
 }
 
 .CGMtitle__card3 button{
-	font-size: 1.3rem; 
+	font-size: 1.3rem;
 	color: white;
 	font-weight: bold;
-	background-color: #03234B;  
-	border: none; 
+	background-color: #03234B;
+	border: none;
 }
 
 .CGM__titlebox {
@@ -1485,7 +1684,7 @@ tr:last-child td {
 	margin-bottom: 10px;
 	background-color: #dee2e6;
 	padding: 0.3rem;
-	
+
 }
 
 .CGM__titlebox2 {
@@ -1499,26 +1698,26 @@ tr:last-child td {
 	margin-bottom: 10px;
 	background-color: #dee2e6;
 	padding: 0.3rem;
-	
+
 }
 
 
 .CGM__titlebox select {
-	font-size: 1.3rem; 
+	font-size: 1.3rem;
 	color: #03234B;
 	font-weight: bold;
-	background-color: #dee2e6;  
+	background-color: #dee2e6;
 	border: none;
-	width: 90%; 
+	width: 90%;
   }
 
   .CGM__titlebox2 select {
-	font-size: 1.3rem; 
+	font-size: 1.3rem;
 	color: #03234B;
 	font-weight: bold;
-	background-color: #dee2e6;  
+	background-color: #dee2e6;
 	border: none;
-	width: 90%; 
+	width: 90%;
   }
 
   .CGMInfo{
@@ -1529,9 +1728,9 @@ tr:last-child td {
 }
 
 .CGM__Response{
-	flex-grow: 1; 
-	color: green; 
-	margin-left: 20px; 
+	flex-grow: 1;
+	color: green;
+	margin-left: 20px;
 	font-weight: bold;
 	font-size: 20px;
 	text-align: left;
@@ -1542,40 +1741,40 @@ tr:last-child td {
 	padding-bottom: 1rem;
 	display: grid;
 	align-items: start;
-	justify-content: start; 
+	justify-content: start;
 }
 
 
 @media (max-width: 768px) {
   .CGM__container,
   .CGM__container3 {
-    grid-template-columns: 1fr; 
+    grid-template-columns: 1fr;
   }
-  
+
   .CGM__title2 {
-    font-size: 20px; 
+    font-size: 20px;
   }
-  
+
   .CGM__card2,
   .CGMtitle__card2,
   .CGMtitle__card3,
   .CGMtitle__card4 {
-    width: 100%; 
+    width: 100%;
   }
-  
+
   .CGMtitle__card3 button,
-  .CGMtitle__card4 button 
+  .CGMtitle__card4 button
   .CGM__Response{
-    font-size: 1rem; 
+    font-size: 1rem;
   }
-  
+
   .CGM__titlebox  select,
   .CGM__titlebox2  select,
   .CGMtitle__card2 select {
     font-size: 1rem;
   }
   .CGM__container4 {
-    flex-direction: column; 
+    flex-direction: column;
   }
   .CGM__Response {
     margin-left: 0;
@@ -1585,19 +1784,19 @@ tr:last-child td {
 
 @media (max-width: 480px) {
   .CGM__title2 {
-    font-size: 18px; 
+    font-size: 18px;
   }
-  
+
   .CGMtitle__card3 button,
   .CGMtitle__card4 button
   .CGM__Response {
-    font-size: 0.8rem; 
+    font-size: 0.8rem;
   }
-  
+
   .CGM__titlebox select,
   .CGM__titlebox2 select,
   .CGMtitle__card2 select {
-    font-size: 0.8rem; 
+    font-size: 0.8rem;
   }
 }
 
@@ -1617,7 +1816,7 @@ img {
 .CharTableTh {
 	color: white;
     background-color: #03234B;
-	
+
 }
 
 .CharTableTd{
@@ -1650,7 +1849,7 @@ img {
 	align-items: left;
 	justify-content: left;
 	padding-inline-start: 0.5rem;
-	
+
 }
 
 .InfoTableTd{
@@ -1676,8 +1875,8 @@ img {
 	align-items: center;
 	justify-content: center;
 	padding-inline-start: 1.5rem;
-	
-	
+
+
 }
 .Char_titlebox {
 	width: 93%;
@@ -1703,14 +1902,14 @@ img {
 	background-color: #FFD200;
 	height: fit-content;
 	border-radius: 0.5rem;
-	
+
 	color: #03234B;
 	font-weight: bold;
 	font-size: 14px;
 	margin-left: 10px;
 	margin-bottom: 5px;
 	margin-top: 1px;
-	
+
 
 }
 
@@ -1721,7 +1920,7 @@ img {
 
 .Chartitle__card2{
 	border: #03234B solid 4px;
-	
+
 	margin-left: 20px;
 	border-radius: 1rem;
 	width: 90%;
@@ -1755,9 +1954,9 @@ img {
 .Chartitle__card2 .divider {
 	border: 0;
 	height: 4px;
-	background-color: grey; 
-	margin-top: 10px; 
-	margin-bottom: 10px; 
+	background-color: grey;
+	margin-top: 10px;
+	margin-bottom: 10px;
   }
 
 
@@ -1769,12 +1968,12 @@ img {
 	flex-direction: column;
 	margin-bottom: 20px;
 	margin-top: 10px;
-	
+
 }
 
 .header-content {
 	display: flex;
-	align-items: center; 
+	align-items: center;
   }
 
 .Chartitle__card3 h3{
@@ -1808,7 +2007,7 @@ img {
 	flex-direction: column;
 	margin-bottom: 20px;
 	margin-top: 10px;
-	
+
 }
 
 .Chartitle__card4 h3{
@@ -1826,7 +2025,7 @@ img {
 
 .Char__container {
 	padding-top: 1.5rem;
-	grid-template-columns: 4fr 3fr; 
+	grid-template-columns: 4fr 3fr;
 	padding-bottom: 1rem;
 	align-items: center;
 	justify-content: center;
@@ -1836,9 +2035,9 @@ img {
   }
 
 .Char__container2{
-	
+
 	padding-top: 1rem;
-	grid-template-columns: 2fr 3fr; 
+	grid-template-columns: 2fr 3fr;
 	padding-bottom: 1rem;
 	align-items: center;
 	justify-content: center;
@@ -1847,7 +2046,7 @@ img {
 }
 
 .Chartitle__card2 div {
-	text-align: left; 
+	text-align: left;
 	gap: 2rem;
 
   }
@@ -1856,19 +2055,19 @@ img {
 	border: #03234B solid 4px;
 	padding: 0.3rem;
 	border-radius: 1rem;
-	display: flex; 
+	display: flex;
 	flex-direction: column;
-	justify-content: center; 
+	justify-content: center;
 	align-items: center;
-	margin-left: 10px; 
+	margin-left: 10px;
 
-	
+
 }
 
 .custom-divider {
-	height: 3px; 
+	height: 3px;
 	background-color: grey;
-	width: 100%; 
+	width: 100%;
 	margin-top: 5px;
 	margin-bottom: 5px;
   }
@@ -1902,16 +2101,16 @@ img {
 	width: 60%;
 
   }
-  
+
   .Charbuttitle__card button {
-	font-size: 17px; 
+	font-size: 17px;
 	color: white;
 	font-weight: bold;
-	background-color: #03234B;  
-	border: none; 
-	cursor: pointer; 
+	background-color: #03234B;
+	border: none;
+	cursor: pointer;
 	padding: 0.1rem;
-	
+
   }
   .Charbuttitle__card2 {
 	background-color: #03234B;
@@ -1921,16 +2120,16 @@ img {
 	width: 30%;
 
   }
-  
+
   .Charbuttitle__card2 button {
-	font-size: 17px; 
+	font-size: 17px;
 	color: white;
 	font-weight: bold;
-	background-color: #03234B;  
-	border: none; 
-	cursor: pointer; 
+	background-color: #03234B;
+	border: none;
+	cursor: pointer;
 	padding: 0.1rem;
-	
+
   }
 
   .Charbuttitle__card2:hover, .Charbuttitle__card:hover {
@@ -1945,41 +2144,41 @@ img {
 
 .app-list-container {
 	background-color: transparent;
-	height: 200px; 
+	height: 200px;
 	overflow-y: auto;
 
   }
-  
+
   .app-list-item {
 	padding: 10px;
-	border-bottom: 1px solid grey; 
-	text-align: left; 
-	width: 100%; 
-	box-sizing: border-box; 
+	border-bottom: 1px solid grey;
+	text-align: left;
+	width: 100%;
+	box-sizing: border-box;
   }
-  
+
   .app-list-item:hover {
-	background-color: #f0f0f0; 
-	cursor: pointer; 
+	background-color: #f0f0f0;
+	cursor: pointer;
   }
-  
+
   .app-list-item:active {
 	background-color: grey;
-	color: white; 
+	color: white;
   }
 
   .app-list-text {
-	margin-left: 10px; 
-	color: #03234B; 
-	font-size: 19px; 
+	margin-left: 10px;
+	color: #03234B;
+	font-size: 19px;
 	font-weight: bold;
-	cursor: pointer; 
+	cursor: pointer;
   }
 
   .app-list-text:hover{
 	margin-left: 10px;
-	color: #E6007E; 
-	font-size: 18px; 
+	color: #E6007E;
+	font-size: 18px;
 	font-weight: bold;
   }
 
@@ -1991,35 +2190,35 @@ img {
 
   .app-list-link {
 	text-decoration: none;
-	color: inherit; 
+	color: inherit;
   }
-  
-  
+
+
 
   .main-content {
 	flex-grow: 1;
 
   }
-  
+
   .sidebar .Chartitle__card5 {
 	width: 310px;
-	padding: 0.2rem; 
+	padding: 0.2rem;
  	margin: 5px;
  }
 
   .sidebar {
 
-	height: auto; 
+	height: auto;
   }
 
   .ALL__container {
 	display: flex;
 	flex-direction: row;
 	align-items: flex-start;
-	justify-content: flex-start; 
+	justify-content: flex-start;
 	height: 100%;
 	margin-right: 0;
-	padding-right: 0; 
+	padding-right: 0;
   }
 
   .Chartitle__card6{
@@ -2031,12 +2230,12 @@ img {
 }
 
 .Chartitle__card6 select {
-	font-size: 1rem; 
+	font-size: 1rem;
 	color: #03234B;
 	font-weight: bold;
-	background-color: #BDC5D0; 
+	background-color: #BDC5D0;
 	border: none;
-	width: 90%; 
+	width: 90%;
   }
 
   .way-list-container {
@@ -2045,31 +2244,31 @@ img {
 	max-height: 100vh;
 
   }
-  
+
   .way-list-item {
 	padding: 10px;
-	border-bottom: 1px solid grey; 
-	text-align: left; 
-	width: 100%; 
-	box-sizing: border-box; 
+	border-bottom: 1px solid grey;
+	text-align: left;
+	width: 100%;
+	box-sizing: border-box;
   }
-  
+
   .way-list-item:hover {
-	background-color: #f0f0f0; 
-	cursor: pointer; 
+	background-color: #f0f0f0;
+	cursor: pointer;
   }
-  
+
   .way-list-item:active {
 	background-color: grey;
-	color: white; 
+	color: white;
   }
 
   .way-list-text {
-	margin-left: 10px; 
-	color: #03234B; 
-	font-size: 1rem; 
+	margin-left: 10px;
+	color: #03234B;
+	font-size: 1rem;
 	font-weight: bold;
-	cursor: pointer; 
+	cursor: pointer;
   }
 
   .disabled {
@@ -2078,36 +2277,36 @@ img {
   }
 
   .logo-disabled {
-	filter: grayscale(100%); 
-	opacity: 0.5; 
+	filter: grayscale(100%);
+	opacity: 0.5;
   }
 
-  
+
   .hidden {
 	display: none;
   }
 
 
   @media (max-width: 1250px)  {
-  
-  
+
+
 	.Chartitle__card2, .Chartitle__card3, .Chartitle__card4 {
 	  width: 89%;
 	  margin-left: 0;
 	  margin-right: 0;
 	}
-  
+
 	.Chartitle__card2 h1, .Chartitle__card3 h1, .Chartitle__card4 h3 {
 	  font-size: 20px;
 	}
-  
+
 	.Chartitle__card2 h3, .Chartitle__card3 h3, .Chartitle__card4 h3, .app-list-text,.way-list-text , .Chartitle__card5 h1, .Chartitle__card5 h3 {
 	  font-size: 15px;
 	}
-	
+
 	.Chartitle__card6 select{
 		font-size: 0.9rem;
-		width: 80%; 
+		width: 80%;
 	}
 
 	.Chartitle__card6{
@@ -2125,30 +2324,30 @@ img {
 
 	  .sidebar {
 		position: relative;
-		top: 52%; 
-		height: auto; 
+		top: 52%;
+		height: auto;
 	  }
 
-	  
+
   }
-  
+
 
   @media (max-width: 950px) {
 	.Char__container {
 	  grid-template-columns: 1fr;
 	  gap: 1rem;
 	}
-  
+
 	.Char__container2 {
 	  grid-template-columns: 1fr;
 	}
-  
+
 	.Chartitle__card2, .Chartitle__card3, .Chartitle__card4 {
 	  width: 90%;
 	  margin-left: 0;
 	  margin-right: 0;
 	}
-  
+
 	.Chartitle__card2 h1, .Chartitle__card3 h1, .Chartitle__card4 h3 {
 	  font-size: 23px;
 	}
@@ -2156,8 +2355,8 @@ img {
 	.app-list-text, .Chartitle__card5 h1, .way-list-text{
 		font-size: 16px;
 	  }
-	
-  
+
+
 	.Chartitle__card2 h3, .Chartitle__card3 h3, .Chartitle__card4 h3 {
 	  font-size: 16px;
 	}
@@ -2170,51 +2369,51 @@ img {
 	  .sidebar {
 		position: relative;
 		top: 30%;
-		height: auto; 
+		height: auto;
 	  }
 
 	  .sidebar .Chartitle__card5 {
-		width: 280px; 
+		width: 280px;
 	 }
-  
+
 	.Chartitle__card3 img {
 	  max-width: 40px;
 	}
 
 	.Char__container2{
-	
+
 		padding-top: 0.5rem;
-		grid-template-columns: 2fr 3fr; 
+		grid-template-columns: 2fr 3fr;
 		padding-bottom: 1rem;
 		align-items: center;
 		justify-content: center;
 		display: grid;
 		gap: 0rem;
 	}
-	
+
   }
-  
+
 
   @media (max-width: 480px) {
 	.Char__container {
 	  grid-template-columns: 1fr;
 	  gap: 0.5rem;
 	}
-  
+
 	.Char__container2 {
 	  grid-template-columns: 1fr;
 	}
-  
+
 	.Chartitle__card2, .Chartitle__card3, .Chartitle__card4 {
 	  width: 90%;
 	  margin-left: 0;
 	  margin-right: 0;
 	}
-  
+
 	.Chartitle__card2 h1, .Chartitle__card3 h1, .Chartitle__card4 h3 {
 	  font-size: 16px;
 	}
-  
+
 	.Chartitle__card2 h3, .Chartitle__card3 h3, .Chartitle__card4 h3 {
 	  font-size: 12px;
 	}
@@ -2226,7 +2425,7 @@ img {
 	  .app-list-text{
 		margin-left: 1px;
 	  }
-  
+
 	.appsLogo{
 		margin-left: 5px;
 		width: 10px;
@@ -2234,22 +2433,22 @@ img {
 
 	  .sidebar {
 		position: relative;
-		top: 40%; 
-		height: auto; 
+		top: 40%;
+		height: auto;
 	  }
 
 	  .sidebar .Chartitle__card5 {
-		width: 150px; 
+		width: 150px;
 	 }
-  
+
 	.Chartitle__card3 img {
 	  max-width: 30px;
 	}
 
 	.Char__container2{
-	
+
 		padding-top: 0.5rem;
-		grid-template-columns: 2fr 3fr; 
+		grid-template-columns: 2fr 3fr;
 		padding-bottom: 1rem;
 		align-items: center;
 		justify-content: center;
@@ -2272,15 +2471,15 @@ img {
 	width: 65%;
 
   }
-  
+
   .Charbuttitle__card button {
-	font-size: 12px; 
+	font-size: 12px;
   }
 
 .Char_titlebox h3 {
 	font-size: 20px;
 
-}  
+}
 
 }
 
@@ -2294,7 +2493,7 @@ img {
 
 .progress-bar {
     height: 100%;
-    background-color: #3CB4E6; 
+    background-color: #3CB4E6;
     text-align: center;
     border-radius: 5px;
     transition: width 0.4s ease;
@@ -2311,7 +2510,7 @@ img {
 
 .image {
     margin: 10px 0;
-    padding: 10px;   
+    padding: 10px;
 }
 
 .status-active {
@@ -2319,7 +2518,7 @@ img {
 }
 
 .status-standby {
-    color: #3CB4E6; 
+    color: #3CB4E6;
 }
 
 table {
@@ -2348,7 +2547,7 @@ tr:nth-child(even) {background-color: #f2f2f2;}
 }
 
 .table-standby {
-    border: 1px solid #3CB4E6; 
+    border: 1px solid #3CB4E6;
 }
 
 .th-active {
@@ -2360,7 +2559,7 @@ tr:nth-child(even) {background-color: #f2f2f2;}
 }
 
 .table-newImage {
-    border: 1px solid #3CB4E6; 
+    border: 1px solid #3CB4E6;
 }
 .th-newImage {
     background-color: #3CB4E6;

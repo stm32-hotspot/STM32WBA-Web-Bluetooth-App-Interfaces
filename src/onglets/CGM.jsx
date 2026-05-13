@@ -35,7 +35,7 @@ const ContinuousGlucoseMonitoring = (props) => {
     let WriteCharacteristic;
 
     const gcChartContainer = useRef(null);
-  
+
     const [gcChart, setgcChart] = useState(null);
 
     const [selectedOperator, setSelectedOperator] = useState('AllRecords');
@@ -58,18 +58,21 @@ const ContinuousGlucoseMonitoring = (props) => {
 
     let gcDataSet = [];
     let gcTime = [];
-  
+
+    const isWindowsPlatform = typeof navigator !== 'undefined' && /Windows/i.test(navigator.userAgent);
+    const [showWindowsPairingWarning, setShowWindowsPairingWarning] = useState(isWindowsPlatform);
+
     const createChartConfig = (label, title, color) => {
       return {
         type: "line",
         data: {
-          labels: [], 
+          labels: [],
           datasets: [{
             label: label,
             borderColor: color,
             backgroundColor: color,
-            fill: false, 
-            data: [], 
+            fill: false,
+            data: [],
           }],
         },
         options: {
@@ -79,7 +82,7 @@ const ContinuousGlucoseMonitoring = (props) => {
             duration: 0,
           },
           plugins: {
-            legend: { 
+            legend: {
               display: false
             },
             title: {
@@ -92,14 +95,15 @@ const ContinuousGlucoseMonitoring = (props) => {
               }
             },
           },
-  
+
         }
       };
     };
 
     useEffect(() => {
+      let newgcChart;
       if (gcChartContainer.current) {
-          const newgcChart = new Chart(gcChartContainer.current, gcChartConfig);
+        newgcChart = new Chart(gcChartContainer.current, gcChartConfig);
           setgcChart(newgcChart);
       }
 
@@ -124,7 +128,7 @@ const ContinuousGlucoseMonitoring = (props) => {
       }
 
       return () => {
-        if (gcChart) gcChart.destroy();
+        if (newgcChart) newgcChart.destroy();
         if (WriteIndicateCharacteristic && WriteIndicateCharacteristic.characteristic) {
           WriteIndicateCharacteristic.characteristic.removeEventListener('characteristicvaluechanged', handleRacpIndication);
           WriteIndicateCharacteristic.characteristic.stopNotifications();
@@ -144,17 +148,17 @@ const ContinuousGlucoseMonitoring = (props) => {
         return;
       }
 
-      const GRAPH_MAX_LABELS = 30; 
-    
-     
+      const GRAPH_MAX_LABELS = 30;
+
+
       if (chart.data.labels.length >= GRAPH_MAX_LABELS) {
         chart.data.labels.pop(); // Remove the last element
         chart.data.datasets[datasetIndex].data.pop(); // Remove the last element
       }
-    
+
       chart.data.labels.unshift(newLabel); // Add current time at the beginning of the Array
       chart.data.datasets[datasetIndex].data.unshift(newData); // Add new data at the beginning of the Array
-    
+
 
       chart.update();
     }
@@ -189,15 +193,15 @@ const ContinuousGlucoseMonitoring = (props) => {
         NotifyCharacteristic = element; //CGM Measurement
         NotifyCharacteristic.characteristic.startNotifications();
         NotifyCharacteristic.characteristic.oncharacteristicvaluechanged = notifHandler;
-            break; 
+            break;
 
       case "00002a52-0000-1000-8000-00805f9b34fb":
         WriteIndicateCharacteristic = element; // Record Acces Control Point
- 
+
        break;
 
      case "00002aac-0000-1000-8000-00805f9b34fb":
-        IndicateCharacteristic = element; // Specific Ops Control Point 
+        IndicateCharacteristic = element; // Specific Ops Control Point
        break;
 
       default:
@@ -205,8 +209,8 @@ const ContinuousGlucoseMonitoring = (props) => {
     }
   });
 
-  
-  
+
+
   document.getElementById("readmeInfo").style.display = "none";
 
   function notifHandler(event) {
@@ -214,16 +218,20 @@ const ContinuousGlucoseMonitoring = (props) => {
     var buf = new Uint8Array(event.target.value.buffer);
     console.log(buf);
 
-  
+    if (buf.length > 0) {
+      setShowWindowsPairingWarning(false);
+    }
+
+
     let recordSize = buf[0];
 
-  
+
     let flags = buf[1];
 
 
     let glucoseConcentrationRaw = buf[2] | (buf[3] << 8);
-    let glucoseConcentration = glucoseConcentrationRaw; 
-    
+    let glucoseConcentration = glucoseConcentrationRaw;
+
 
     // Time Offset
     let timeOffset = buf[4] | (buf[5] << 8);
@@ -231,7 +239,7 @@ const ContinuousGlucoseMonitoring = (props) => {
 
     // Sensor Status Annunciation (if present)
     let sensorStatusAnnunciation = { status: null, calTemp: null, warning: null };
-    let currentIndex = 6; 
+    let currentIndex = 6;
 
     if (flags & (1 << 7)) { // Status field present
         sensorStatusAnnunciation.status = buf[currentIndex];
@@ -254,9 +262,9 @@ const ContinuousGlucoseMonitoring = (props) => {
         let devspecificalert = (sensorStatusAnnunciation.status & (1 << 4)) !== 0;
         let devicefault = (sensorStatusAnnunciation.status & (1 << 5)) !== 0;
 
-    
+
         // Interpret the Cal/Temp bits
-        let timeSyncRequired = (sensorStatusAnnunciation.calTemp & (1 << 0)) !== 0; 
+        let timeSyncRequired = (sensorStatusAnnunciation.calTemp & (1 << 0)) !== 0;
         let calibrationNotAllowed = (sensorStatusAnnunciation.calTemp & (1 << 1)) !== 0;
         let calibrationRecommed = (sensorStatusAnnunciation.calTemp & (1 << 2)) !== 0;
         let calibrationRequired = (sensorStatusAnnunciation.calTemp & (1 << 3)) !== 0;
@@ -264,9 +272,9 @@ const ContinuousGlucoseMonitoring = (props) => {
         let sensorTempLow = (sensorStatusAnnunciation.calTemp & (1 << 5)) !== 0;
         let calibrationPending= (sensorStatusAnnunciation.calTemp & (1 << 6)) !== 0;
 
-    
+
         // Interpret the Warning bits
-        let sensorPatientLow = (sensorStatusAnnunciation.warning & (1 << 0)) !== 0; 
+        let sensorPatientLow = (sensorStatusAnnunciation.warning & (1 << 0)) !== 0;
         let sensorPatientHigh = (sensorStatusAnnunciation.warning & (1 << 1)) !== 0;
         let sensorHypo = (sensorStatusAnnunciation.warning & (1 << 2)) !== 0;
         let sensorHyper = (sensorStatusAnnunciation.warning & (1 << 3)) !== 0;
@@ -277,21 +285,21 @@ const ContinuousGlucoseMonitoring = (props) => {
 
     // CGM Trend Information (if present)
     let trendInformation = null;
-    if (flags & (1 << 0)) { 
-        trendInformation = buf[currentIndex] | (buf[currentIndex + 1] << 8); 
-        currentIndex += 2; 
+    if (flags & (1 << 0)) {
+        trendInformation = buf[currentIndex] | (buf[currentIndex + 1] << 8);
+        currentIndex += 2;
     }
 
     // CGM Quality
     let quality = null;
     if (flags & (1 << 1)) { // Check if bit 1 is set
-        quality = buf[currentIndex] | (buf[currentIndex + 1] << 8); 
-        currentIndex += 2; 
+        quality = buf[currentIndex] | (buf[currentIndex + 1] << 8);
+        currentIndex += 2;
     }
 
     // E2E-CRC (if present )
     let e2eCrc = null;
-    if (recordSize === currentIndex + 2) { 
+    if (recordSize === currentIndex + 2) {
         e2eCrc = buf[currentIndex] | (buf[currentIndex + 1] << 8);
     }
 
@@ -393,6 +401,10 @@ async function readStatus() {
   let statusWord = new Uint8Array(value.buffer);
   console.log("Status", statusWord);
 
+  if (statusWord.length > 0) {
+    setShowWindowsPairingWarning(false);
+  }
+
 
 }
 
@@ -402,6 +414,10 @@ async function readFeature() {
   var value = await ReadIndicateCharacteristic.characteristic.readValue();
   let featureData = new Uint8Array(value.buffer);
   console.log("Feature", featureData);
+
+  if (featureData.length > 0) {
+    setShowWindowsPairingWarning(false);
+  }
 
 
   let features = featureData[0] | (featureData[1] << 8) | (featureData[2] << 16);
@@ -428,7 +444,7 @@ async function readFeature() {
 
 
   let typeSampleLocation = featureData[3];
-  let type = (typeSampleLocation & 0xF0) >> 4; 
+  let type = (typeSampleLocation & 0xF0) >> 4;
   let sampleLocation = typeSampleLocation & 0x0F;
 
 
@@ -465,13 +481,17 @@ async function readStartTime() {
   var value = await ReadCharacteristic.characteristic.readValue();
   let startTimeData = new Uint8Array(value.buffer);
   console.log("Start Time", startTimeData);
+
+  if (startTimeData.length > 0) {
+    setShowWindowsPairingWarning(false);
+  }
   let hexStringArray = Array.from(startTimeData, byte => byte.toString(16).padStart(2, '0'));
 
 
   let hexFormattedStartTime = hexStringArray.join('-');
   console.log(`Start Time: ${hexFormattedStartTime}`);
 
- 
+
   let year = startTimeData[0] | (startTimeData[1] << 8);
   let month = startTimeData[2];
   let day = startTimeData[3];
@@ -482,7 +502,7 @@ async function readStartTime() {
 
   let formattedStartTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   console.log(`Start Time: ${formattedStartTime}`);
-  
+
 
   setStartTime(formattedStartTime);
 }
@@ -495,13 +515,13 @@ async function writeStartTime() {
   let timeZoneOffsetMinutes = now.getTimezoneOffset();
 
   let year = now.getUTCFullYear();
-  let month = now.getUTCMonth() + 1; 
+  let month = now.getUTCMonth() + 1;
   let day = now.getUTCDate();
   let hours = now.getUTCHours() - (timeZoneOffsetMinutes / 60);
   let minutes = now.getUTCMinutes();
   let seconds = now.getUTCSeconds();
   let timeZone = (timeZoneOffsetMinutes / 15) * -1;
-  let dstOffset =  0; 
+  let dstOffset =  0;
 
 
   let buffer = new ArrayBuffer(9);
@@ -520,16 +540,16 @@ async function writeStartTime() {
 
 
   let crcBytes = new Uint8Array([
-    crcValue & 0xFF,       
-    (crcValue >> 8) & 0xFF  
+    crcValue & 0xFF,
+    (crcValue >> 8) & 0xFF
   ]);
 
- 
+
   let finalBuffer = new ArrayBuffer(11);
   let finalDataView = new DataView(finalBuffer);
-  new Uint8Array(finalBuffer).set(new Uint8Array(buffer), 0); 
-  finalDataView.setUint8(9, crcBytes[0]); 
-  finalDataView.setUint8(10, crcBytes[1]); 
+  new Uint8Array(finalBuffer).set(new Uint8Array(buffer), 0);
+  finalDataView.setUint8(9, crcBytes[0]);
+  finalDataView.setUint8(10, crcBytes[1]);
 
   try {
     console.log('Command to be sent:', Array.from(new Uint8Array(finalBuffer)).map(byte => byte.toString(16).padStart(2, '0')).join('-'));
@@ -556,16 +576,16 @@ function computeCRC(bytes) {
     }
   });
 
-  
+
   const crcLowByte = res & 0xFF;
   const crcHighByte = (res >>> 8) & 0xFF;
 
-  return (crcHighByte << 8) | crcLowByte; 
+  return (crcHighByte << 8) | crcLowByte;
 }
 
 async function startNewSession() {
-  await writeStartTime(); 
-  await readStartTime(); 
+  await writeStartTime();
+  await readStartTime();
 }
 
 
@@ -576,24 +596,24 @@ function handleRacpIndication(event) {
   console.log(value)
   const opCode = value.getUint8(0);
   const operator = value.getUint8(1);
-  const operand = new Uint8Array(value.buffer.slice(2)); 
+  const operand = new Uint8Array(value.buffer.slice(2));
 
   console.log(`RACP Indication: OpCode=${opCode}, Operator=${operator}, Operand=${operand}`);
 
   if (opCode === 0x06 && operator === 0x00 && operand[0] === 0x01 && operand[1] === 0x01) {
     console.log('Received successful response to Op Code 0x01');
-  
+
     const successMessageElement = document.getElementById('racpSuccessMessage');
     if (successMessageElement) {
       successMessageElement.textContent = 'Response Code to Report stored records: Success';
     }
   }
-  
+
   else if(opCode === 0x05 && operator === 0x00) {
 
       const numberOfRecords = operand[0] | (operand[1] << 8);
       console.log(`Number of Stored Records: ${numberOfRecords}`);
-  
+
 
       const successMessageElement = document.getElementById('racpSuccessMessage');
       if (successMessageElement) {
@@ -604,8 +624,8 @@ function handleRacpIndication(event) {
     else if(opCode === 0x06 && operator === 0x00 && operand[0] === 0x03) {
 
       console.log('Received successful response to Op Code 0x06');
-  
- 
+
+
       const successMessageElement = document.getElementById('racpSuccessMessage');
       if (successMessageElement) {
         successMessageElement.textContent = `Response Code to Abort Operation: Success`;
@@ -613,9 +633,9 @@ function handleRacpIndication(event) {
     }
 
     else if(opCode === 0x06 && operator === 0x00 && operand[0] === 0x02) {
- 
+
       console.log('Received successful response to Op Code 0x06');
-  
+
 
       const successMessageElement = document.getElementById('racpSuccessMessage');
       if (successMessageElement) {
@@ -766,7 +786,7 @@ function handleSocpIndication(event) {
     console.log('Received successful response to Op Code 0x14');
     const dec = value.getUint16(1, true);
     console.log(`Rate of Decrease Alert Level: ${dec} mg / dL`);
-  
+
     const successMessageElement = document.getElementById('socpSuccessMessage');
     if (successMessageElement) {
       successMessageElement.textContent = `Rate of Decrease Alert Level Response: ${dec} mg/dL/min`;
@@ -912,26 +932,26 @@ async function onSendRacpClick() {
   if (successMessageElement) {
     successMessageElement.textContent = '';
   }
-  
+
   switch (selectedOperation) {
     case 'reportStoredRecords':
-      opCode = 0x01; 
+      opCode = 0x01;
       break;
 
     case 'deleteStoredRecords':
-      opCode = 0x02; 
-      break; 
+      opCode = 0x02;
+      break;
 
     case 'abortOperation':
-      opCode = 0x03; 
-      break; 
+      opCode = 0x03;
+      break;
 
     case 'reportNumOfStoredRecords':
-      opCode = 0x04; 
-      break;    
+      opCode = 0x04;
+      break;
 
       }
-    
+
     switch (selectedOperator) {
         case 'AllRecords':
           operator = 0x01; // Operator for "all records"
@@ -940,7 +960,7 @@ async function onSendRacpClick() {
 
         case 'GreaterThanorEqualTo':
           operator = 0x03; // Operator for "greater than or equal to"
-        
+
           sequenceNumberInt = parseInt(sequenceNumber, 10);
           if (isNaN(sequenceNumberInt)) {
             console.error('Invalid sequence number');
@@ -953,8 +973,8 @@ async function onSendRacpClick() {
           break;
 
         case 'LessThanorEqualTo':
-          operator = 0x02; 
-          
+          operator = 0x02;
+
           sequenceNumberInt = parseInt(sequenceNumber, 10);
           if (isNaN(sequenceNumberInt)) {
              console.error('Invalid sequence number');
@@ -967,8 +987,8 @@ async function onSendRacpClick() {
           break;
 
           case 'WithinRangeof':
-            operator = 0x04; 
-            
+            operator = 0x04;
+
             sequenceNumberInt = parseInt(sequenceNumberMin, 10);
             const sequenceNumberInt2 = parseInt(sequenceNumberMax, 10);
             if (isNaN(sequenceNumberInt) || isNaN(sequenceNumberInt2)) {
@@ -977,24 +997,24 @@ async function onSendRacpClick() {
             }
             operandLowByte = sequenceNumberInt & 0xFF;
             const operandLowByte2 = sequenceNumberInt2 & 0xFF;
-  
+
             command = Uint8Array.of(opCode, operator, 0x01, operandLowByte, 0x00, operandLowByte2, 0x00);
             console.log(Array.from(command).map(byte => byte.toString(16).padStart(2, '0')).join('-'));
             break;
 
           case 'FirstRecord':
-            operator = 0x05; 
+            operator = 0x05;
             command = Uint8Array.of(opCode, operator);
           break;
 
           case 'LastRecord':
-            operator = 0x06; 
+            operator = 0x06;
             command = Uint8Array.of(opCode, operator);
-          break;    
+          break;
       }
 
   try {
-    
+
     console.log(`Sending RACP operation: Operation=${selectedOperation}, Operator=${selectedOperator}`);
     console.log("Writing >> ", command);
     await WriteIndicateCharacteristic.characteristic.writeValue(command);
@@ -1037,7 +1057,7 @@ async function onSendSocpClick() {
         dataView = new DataView(finalBuffer);
         break;
     case 'SetGlucoseCalibrationvalue':
-        opCode = 0x04; 
+        opCode = 0x04;
         const calibrationTime = parseInt(document.getElementById('calibrationTimeInput').value);
         const sampleLocationType = parseInt(document.getElementById('calibrationType').value);
         const sampleLocation = parseInt(document.getElementById('sampleLocation').value);
@@ -1048,25 +1068,25 @@ async function onSendSocpClick() {
         let sampleLocationHex = sampleLocation.toString(16);
 
         let combinedHexString = sampleLocationTypeHex + sampleLocationHex;
-        
+
 
         const typeSampleLocationCombined = parseInt(combinedHexString, 16);
 
-        bufferSize = 13; 
+        bufferSize = 13;
         finalBuffer = new ArrayBuffer(bufferSize);
         dataView = new DataView(finalBuffer);
-      
-        dataView.setUint8(0, opCode); 
-        dataView.setUint16(1, operand); 
-        dataView.setUint16(3, calibrationTime, true); 
-        dataView.setUint8(5, typeSampleLocationCombined ); 
-        dataView.setUint16(6, nextCalibrationTime, true);  
-        dataView.setUint16(8, calibrationDataRecordNumber, true); 
-        dataView.setUint8(10, calibrationStatus); 
+
+        dataView.setUint8(0, opCode);
+        dataView.setUint16(1, operand);
+        dataView.setUint16(3, calibrationTime, true);
+        dataView.setUint8(5, typeSampleLocationCombined );
+        dataView.setUint16(6, nextCalibrationTime, true);
+        dataView.setUint16(8, calibrationDataRecordNumber, true);
+        dataView.setUint8(10, calibrationStatus);
         break;
     case 'GetGlucoseCalibrationvalue':
-        opCode = 0x05;  
-        bufferSize = 5; 
+        opCode = 0x05;
+        bufferSize = 5;
         finalBuffer = new ArrayBuffer(bufferSize);
         dataView = new DataView(finalBuffer);
         dataView.setUint16(1, 0xffff, true);
@@ -1077,7 +1097,7 @@ async function onSendSocpClick() {
         bufferSize = 5;
         finalBuffer = new ArrayBuffer(bufferSize);
         dataView = new DataView(finalBuffer);
-        dataView.setUint8(1, operand); 
+        dataView.setUint8(1, operand);
      }
        break;
     case 'GetPatientHighAlertLevel':
@@ -1091,7 +1111,7 @@ async function onSendSocpClick() {
         bufferSize = 5;
         finalBuffer = new ArrayBuffer(bufferSize);
         dataView = new DataView(finalBuffer);
-        dataView.setUint8(1, operand); 
+        dataView.setUint8(1, operand);
      }
       break;
     case 'GetPatientLowAlertLevel':
@@ -1105,7 +1125,7 @@ async function onSendSocpClick() {
         bufferSize = 5;
         finalBuffer = new ArrayBuffer(bufferSize);
         dataView = new DataView(finalBuffer);
-        dataView.setUint8(1, operand); 
+        dataView.setUint8(1, operand);
      }
       break;
     case 'GetHypoAlertLevel':
@@ -1119,7 +1139,7 @@ async function onSendSocpClick() {
         bufferSize = 5;
         finalBuffer = new ArrayBuffer(bufferSize);
         dataView = new DataView(finalBuffer);
-        dataView.setUint8(1, operand); 
+        dataView.setUint8(1, operand);
      }
       break;
     case 'GetHyperAlertLevel':
@@ -1133,7 +1153,7 @@ async function onSendSocpClick() {
         bufferSize = 5;
         finalBuffer = new ArrayBuffer(bufferSize);
         dataView = new DataView(finalBuffer);
-        dataView.setUint8(1, operand); 
+        dataView.setUint8(1, operand);
      }
       break;
     case 'GetRateofDecreaseAlertLevel':
@@ -1147,7 +1167,7 @@ async function onSendSocpClick() {
         bufferSize = 5;
         finalBuffer = new ArrayBuffer(bufferSize);
         dataView = new DataView(finalBuffer);
-        dataView.setUint8(1, operand); 
+        dataView.setUint8(1, operand);
      }
       break;
     case 'GetRateofIncreaseAlertLevel':
@@ -1180,8 +1200,8 @@ async function onSendSocpClick() {
   let crcValue = computeCRC(new Uint8Array(finalBuffer.slice(0, -2)));
 
   let crcBytes = new Uint8Array([
-    crcValue & 0xFF,        
-    (crcValue >> 8) & 0xFF  
+    crcValue & 0xFF,
+    (crcValue >> 8) & 0xFF
   ]);
 
   dataView.setUint8(bufferSize - 2, crcBytes[0]);
@@ -1194,7 +1214,7 @@ let value = 90;
 let medfloat16Value = floatToMedFloat16(value);
 console.log(medfloat16Value);
 console.log(medfloat16Value.toString(16));
-  
+
 }
 
 async function writeToSpecificOpsControlPoint(value) {
@@ -1203,7 +1223,7 @@ async function writeToSpecificOpsControlPoint(value) {
     try {
       console.log("Writing >> ", value);
       IndicateCharacteristic.characteristic.writeValue(value);
-  
+
       console.log('SOCP command sent successfully.');
     } catch (error) {
       console.log('Argh! ' + error);
@@ -1230,11 +1250,11 @@ function floatToMedFloat16(value) {
 
   if (exponent === 0) {
     newExponent = 0;
-    newFraction = fraction >> 13; 
-  } else if (exponent === 0xFF) { 
+    newFraction = fraction >> 13;
+  } else if (exponent === 0xFF) {
     newExponent = 0x1F;
-    newFraction = 0x3FF; 
-  } else { 
+    newFraction = 0x3FF;
+  } else {
     newExponent = Math.max(0, Math.min(0x1F, exponent - 127 + 15));
     newFraction = fraction >> 13;
   }
@@ -1251,6 +1271,12 @@ function floatToMedFloat16(value) {
         <img src={glucoselogo} alt="" className="BLPlogo"></img>
         <h3><strong>Continuous Glucose Monitoring</strong></h3>
       </div>
+
+      {showWindowsPairingWarning && (
+        <div style={{ width: '90%', margin: '0 auto 1rem auto', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #d97706', backgroundColor: '#fff7ed', color: '#9a3412', fontWeight: 600 }}>
+          Windows requirement: Pair your Bluetooth device first from Windows Settings &gt; Bluetooth and devices, then return to this page.
+        </div>
+      )}
 
       <div class="CGM__container container grid">
 
@@ -1275,7 +1301,7 @@ function floatToMedFloat16(value) {
             </table>
 
 
-        <div class="chart-container" style={{height: "225px", width: "90%"}}>  
+        <div class="chart-container" style={{height: "225px", width: "90%"}}>
           <canvas ref={gcChartContainer}></canvas>
         </div>
 
@@ -1459,7 +1485,7 @@ function floatToMedFloat16(value) {
             <input type="text" className="form-control" style={{ fontSize: 20 }} aria-describedby="sequenceNumberPrefix" maxLength="4" value={sequenceNumber} onChange={(e) => setSequenceNumber(e.target.value)} id="sequenceNumberInput"/>
           </div>
         </div>
-        
+
 
       )}
 
@@ -1473,7 +1499,7 @@ function floatToMedFloat16(value) {
             <input type="text" className="form-control" style={{ fontSize: 20 }} aria-describedby="sequenceNumberPrefix" maxLength="4" value={sequenceNumber} onChange={(e) => setSequenceNumber(e.target.value)} id="sequenceNumberInput"/>
           </div>
           </div>
-        
+
           <div className='d-flex' style={{ width: '85%', alignItems:'left', justifyContent:'left', marginBottom:'1rem', display:'flex'}}>
           <div className="input-group" style={{ width: '100%' }}>
             <span className="input-group-text" id="sequenceNumberPrefix" style={{ fontWeight: 'bold', fontSize: 20 }}>Calibration Time (min)</span>
@@ -1525,7 +1551,7 @@ function floatToMedFloat16(value) {
           </div>
           </div>
 
-        
+
             <div className="input-group">
               <div className="input-group-text">
                   <input className="form-check-input mt-0" type="radio" value="0" name='sensorLocation'></input>

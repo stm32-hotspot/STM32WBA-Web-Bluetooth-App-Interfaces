@@ -28,6 +28,9 @@ const WeightScale = (props) => {
   let NotifyCharacteristic;
   let ReadCharacteristic
 
+  const isWindowsPlatform = typeof navigator !== 'undefined' && /Windows/i.test(navigator.userAgent);
+  const [showWindowsPairingWarning, setShowWindowsPairingWarning] = useState(isWindowsPlatform);
+
   
   let weight;
   let bmi;
@@ -68,6 +71,11 @@ const WeightScale = (props) => {
     console.log(" >> Indication received : ");
     var buf = new Uint8Array(event.target.value.buffer);
     console.log(buf);
+
+    if (buf.length > 0) {
+      setShowWindowsPairingWarning(false);
+    }
+
     let bufHex = buf2hex(buf);
     console.log(bufHex);
 
@@ -120,6 +128,12 @@ const WeightScale = (props) => {
         <img src={scaleslogo} alt="" className="WSlogo"></img>
         <h3><strong>Weight Scale</strong></h3>
       </div>
+
+      {showWindowsPairingWarning && (
+        <div style={{ width: '90%', margin: '0 auto 1rem auto', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #d97706', backgroundColor: '#fff7ed', color: '#9a3412', fontWeight: 600 }}>
+          Windows requirement: Pair your Bluetooth device first from Windows Settings &gt; Bluetooth and devices, then return to this page.
+        </div>
+      )}
 
       <div class="WS__container container grid">
 
